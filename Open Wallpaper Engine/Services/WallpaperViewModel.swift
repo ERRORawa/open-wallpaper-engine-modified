@@ -37,14 +37,22 @@ class WallpaperViewModel: ObservableObject {
                 for (index, item) in AppDelegate.shared.statusItem.menu!.items.enumerated() {
                     if item.title == "Pause" {
                         AppDelegate.shared.statusItem.menu!.items[index] =
-                            .init(title: "Resume", systemImage: "play.fill", action: #selector(AppDelegate.shared.resume), keyEquivalent: "")
+                            .init(title: "Resume", systemImage: "play.fill", action: #selector(AppDelegate.shared.resume), keyEquivalent: "r")
+                    }
+                    else if item.title == "暂停" {
+                        AppDelegate.shared.statusItem.menu!.items[index] =
+                            .init(title: "恢复", systemImage: "play.fill", action: #selector(AppDelegate.shared.resume), keyEquivalent: "r")
                     }
                 }
             } else {
                 for (index, item) in AppDelegate.shared.statusItem.menu!.items.enumerated() {
                     if item.title == "Resume" {
                         AppDelegate.shared.statusItem.menu!.items[index] =
-                            .init(title: "Pause", systemImage: "pause.fill", action: #selector(AppDelegate.shared.pause), keyEquivalent: "")
+                            .init(title: "Pause", systemImage: "pause.fill", action: #selector(AppDelegate.shared.pause), keyEquivalent: "p")
+                    }
+                    else if item.title == "恢复" {
+                        AppDelegate.shared.statusItem.menu!.items[index] =
+                            .init(title: "暂停", systemImage: "pause.fill", action: #selector(AppDelegate.shared.pause), keyEquivalent: "p")
                     }
                 }
             }

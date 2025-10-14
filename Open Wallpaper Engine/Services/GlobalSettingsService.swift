@@ -82,6 +82,7 @@ struct GlobalSettings: Codable, Equatable {
     // MARK: Basic Setup
     var language = GSLocalization.followSystem
     var changeWallpaper = false
+    var recentWallpaperCount = "5"
     
     // MARK: macOS
     var adjustMenuBarTint = true

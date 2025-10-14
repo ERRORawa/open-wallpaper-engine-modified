@@ -30,9 +30,16 @@ struct GeneralPage: SettingsPage {
                     Text("English").tag(GSLocalization.en_US)
                     Text("Chinese Simplified").tag(GSLocalization.zh_CN)
                 }.disabled(true)
-                Toggle("Change the wallpaper at the same time", isOn: $viewModel.settings.changeWallpaper)
+                Toggle("And change system wallpaper", isOn: $viewModel.settings.changeWallpaper)
+                Picker("Recent wallpaper list count", selection: $viewModel.settings.recentWallpaperCount) {
+                    Text("5").tag("5")
+                    Text("10").tag("10")
+                    Text("15").tag("15")
+                    Text("20").tag("20")
+                }
             } header: {
                 Label("Basic Setup", systemImage: "gearshape.fill")
+                Text("Changing the system wallpaper only takes effect for the current space\nAnd there will be nearly a long delay")
             }
             // MARK: macOS
             Section {

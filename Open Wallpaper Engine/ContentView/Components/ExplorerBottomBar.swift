@@ -45,5 +45,6 @@ struct ExplorerBottomBar: View {
                 }
                 Spacer()
             }
-        }    }
+        }
+    }
 }

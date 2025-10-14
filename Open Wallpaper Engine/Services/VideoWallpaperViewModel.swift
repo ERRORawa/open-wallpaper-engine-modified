@@ -43,78 +43,76 @@ class VideoWallpaperViewModel: ObservableObject {
         NotificationCenter.default.removeObserver(self)
     }
     
+    func setWallpaper(wallpaperName: String) {
+        if let json = UserDefaults.standard.data(forKey: wallpaperName),
+           let wallpaper = try? JSONDecoder().decode(WEWallpaper.self, from: json) {
+            currentWallpaper = wallpaper
+            AppDelegate.shared.saveCurrentWallpaper()
+            AppDelegate.shared.setPlacehoderWallpaper(with: wallpaper)
+            UserDefaults.standard.set(try! JSONEncoder().encode(currentWallpaper), forKey: "CurrentWallpaper")
+        } else {
+            currentWallpaper = WEWallpaper(using: .invalid, where: Bundle.main.url(forResource: "WallpaperNotFound", withExtension: "mp4")!)
+        }
+    }
+    
     @objc private func playerDidFinishPlaying(_ notification: Notification) {
         print("replaying...")
         let playList = UserDefaults.standard.string(forKey: "PlayList")?.split(separator: "|").compactMap{ "\($0)" }
-        if viewModel.settings.EnablePlaylist == true {
-            if playList!.count > 1 {
-                if UserDefaults.standard.object(forKey: "SwitchWallpaperTiming") != nil {
-                    if viewModel.settings.hourText == "0" && viewModel.settings.minuteText == "0" {
-                        print("切换壁纸时间错误，取消切换");
-                    }
-                    else {
-                        let switchTiming = UserDefaults.standard.double(forKey: "SwitchWallpaperTiming")
-                        let timeInterval = Date().timeIntervalSince1970
-                        if timeInterval > switchTiming {
-                            print("模式: ", viewModel.settings.playOrder)
-                            let wallpaperName = self.currentWallpaper.wallpaperDirectory.absoluteString.split(separator: "/").compactMap({ "\($0)" }).last!
-                            if viewModel.settings.playOrder == "Random" {
-                                var isSame = true
-                                var randomIndex = 0
-                                while isSame {
-                                    randomIndex = Int.random(in: 0...((playList?.count ?? 0) - 1))
-                                    if playList![randomIndex] == wallpaperName {
-                                        print("壁纸相同，重新随机")
-                                    }
-                                    else {
-                                        isSame = false
-                                    }
-                                }
-                                print("随机壁纸: ", playList![randomIndex].removingPercentEncoding ?? "", "\n序号: ", randomIndex)
-                                if let json = UserDefaults.standard.data(forKey: playList![randomIndex]),
-                                   let wallpaper = try? JSONDecoder().decode(WEWallpaper.self, from: json) {
-                                    currentWallpaper = wallpaper
-                                    AppDelegate.shared.saveCurrentWallpaper()
-                                    AppDelegate.shared.setPlacehoderWallpaper(with: wallpaper)
-                                    UserDefaults.standard.set(try! JSONEncoder().encode(currentWallpaper), forKey: "CurrentWallpaper")
-                                } else {
-                                    currentWallpaper = WEWallpaper(using: .invalid, where: Bundle.main.url(forResource: "WallpaperNotFound", withExtension: "mp4")!)
-                                }
-                            }
-                            else {
-                                @State var nextWallpaperIndex = -1
-                                let index = 0
-                                for name in wallpaperName {
-                                    if(String(name) == playList![index]) {
-                                        if(index != (playList!.count - 1)){
-                                            nextWallpaperIndex = index + 1
+        if (playList == nil) == false {
+            if viewModel.settings.EnablePlaylist == true {
+                if playList!.count > 1 {
+                    if UserDefaults.standard.object(forKey: "SwitchWallpaperTiming") != nil {
+                        if viewModel.settings.hourText == "0" && viewModel.settings.minuteText == "0" {
+                            print("切换壁纸时间错误，取消切换");
+                        }
+                        else {
+                            let switchTiming = UserDefaults.standard.double(forKey: "SwitchWallpaperTiming")
+                            let timeInterval = Date().timeIntervalSince1970
+                            if timeInterval > switchTiming {
+                                print("模式: ", viewModel.settings.playOrder)
+                                let wallpaperName = self.currentWallpaper.wallpaperDirectory.absoluteString.split(separator: "/").compactMap({ "\($0)" }).last!
+                                if viewModel.settings.playOrder == "Random" {
+                                    var isSame = true
+                                    var randomIndex = 0
+                                    while isSame {
+                                        randomIndex = Int.random(in: 0...((playList?.count ?? 0) - 1))
+                                        if playList![randomIndex] == wallpaperName {
+                                            print("壁纸相同，重新随机")
                                         }
                                         else {
-                                            nextWallpaperIndex = 0
+                                            isSame = false
                                         }
                                     }
+                                    print("随机壁纸: ", playList![randomIndex].removingPercentEncoding ?? "", "\n序号: ", randomIndex)
+                                    setWallpaper(wallpaperName: playList![randomIndex])
                                 }
-                                print("下一个壁纸: ", playList![nextWallpaperIndex].removingPercentEncoding ?? "", "序号: ", nextWallpaperIndex)
-                                if nextWallpaperIndex != -1 {
-                                    if let json = UserDefaults.standard.data(forKey: playList![nextWallpaperIndex]),
-                                       let wallpaper = try? JSONDecoder().decode(WEWallpaper.self, from: json) {
-                                        currentWallpaper = wallpaper
-                                        AppDelegate.shared.saveCurrentWallpaper()
-                                        AppDelegate.shared.setPlacehoderWallpaper(with: wallpaper)
-                                        UserDefaults.standard.set(try! JSONEncoder().encode(currentWallpaper), forKey: "CurrentWallpaper")
-                                    } else {
-                                        currentWallpaper = WEWallpaper(using: .invalid, where: Bundle.main.url(forResource: "WallpaperNotFound", withExtension: "mp4")!)
+                                else {
+                                    @State var nextWallpaperIndex = -1
+                                    let index = 0
+                                    for name in wallpaperName {
+                                        if(String(name) == playList![index]) {
+                                            if(index != (playList!.count - 1)){
+                                                nextWallpaperIndex = index + 1
+                                            }
+                                            else {
+                                                nextWallpaperIndex = 0
+                                            }
+                                        }
+                                    }
+                                    print("下一个壁纸: ", playList![nextWallpaperIndex].removingPercentEncoding ?? "", "序号: ", nextWallpaperIndex)
+                                    if nextWallpaperIndex != -1 {
+                                        setWallpaper(wallpaperName: playList![nextWallpaperIndex])
                                     }
                                 }
+                            } else {
+                                print("切换时间戳: ", switchTiming, "当前时间戳:  ", timeInterval)
+                                print("播放列表数量: ", playList?.count)
                             }
-                        } else {
-                            print("切换时间戳: ", switchTiming, "当前时间戳:  ", timeInterval)
-                            print("播放列表数量: ", playList?.count)
                         }
                     }
+                } else {
+                    print("播放列表壁纸过少，取消切换")
                 }
-            } else {
-                print("播放列表壁纸过少，取消切换")
             }
         }
         // 重新播放视频

@@ -26,6 +26,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
     var importOpenPanel: NSOpenPanel!
     
+    var recentWallpaper: String = ""
+    
     var eventHandler: Any?
     
     static var shared = AppDelegate()
@@ -33,6 +35,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var viewModel = GlobalSettingsViewModel()
     
     func applicationWillFinishLaunching(_ notification: Notification) {
+        var playList = UserDefaults.standard.string(forKey: "Playlist")
+        if (playList == nil) == false {
+            playList = String("|")
+            UserDefaults.standard.set(playList, forKey: "PlayList")
+        }
         // 创建设置视窗
         setSettingsWindow()
         
@@ -211,8 +218,67 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         }
     }
     
+    @objc func setWallpaper(_ item: NSMenuItem) {
+        let recentWallpapers = UserDefaults.standard.string(forKey: "RecentWallpapers")?.split(separator: "|").compactMap{ "\($0)" }
+        if let json = UserDefaults.standard.data(forKey: recentWallpapers![item.tag]),
+                let wallpaper = try? JSONDecoder().decode(WEWallpaper.self, from: json) {
+                AppDelegate.shared.wallpaperViewModel.currentWallpaper = wallpaper
+                AppDelegate.shared.saveCurrentWallpaper()
+                AppDelegate.shared.setPlacehoderWallpaper(with: wallpaper)
+                UserDefaults.standard.set(try! JSONEncoder().encode(AppDelegate.shared.wallpaperViewModel.currentWallpaper), forKey: "CurrentWallpaper")
+            } else {
+                AppDelegate.shared.wallpaperViewModel.currentWallpaper = WEWallpaper(using: .invalid, where: Bundle.main.url(forResource: "WallpaperNotFound", withExtension: "mp4")!)
+            }
+    }
+    
+    @objc func setRecent(newWallpaperName: String) -> Bool {
+        let viewModel = GlobalSettingsViewModel()
+        let recentWallpapersMenu = NSMenu(title: String(localized: "Recent Wallpapers"))
+        var recentWallpapers = UserDefaults.standard.string(forKey: "RecentWallpapers")
+        if recentWallpapers?.isEmpty != false {
+            recentWallpapers = String("|")
+        }
+        var recentWallpapersArray = recentWallpapers?.split(separator: "|").compactMap{ "\($0)" }
+        if recentWallpapersArray!.count > 0 {
+            if recentWallpapersArray![0] == newWallpaperName {
+                return false
+            }
+        }
+        print("添加壁纸", newWallpaperName)
+        if newWallpaperName.removingPercentEncoding == "WallpaperNotFound.mp4" {
+            print("目前无壁纸")
+            return false
+        }
+        recentWallpapers = "|" + newWallpaperName + recentWallpapers!
+        recentWallpapersArray = recentWallpapers?.split(separator: "|").compactMap{ "\($0)" }
+        if recentWallpapersArray!.count > Int(viewModel.settings.recentWallpaperCount)! {
+            var index = 0
+            recentWallpapers = String("|")
+            for wallpaperName in recentWallpapersArray! {
+                if index == Int(viewModel.settings.recentWallpaperCount) {
+                    break
+                }
+                recentWallpapers = recentWallpapers! + wallpaperName + "|"
+                index += 1
+            }
+            recentWallpapersArray = recentWallpapers?.split(separator: "|").compactMap{ "\($0)" }
+        }
+        UserDefaults.standard.set(recentWallpapers, forKey: "RecentWallpapers")
+        var index = 0
+        recentWallpapersMenu.items = []
+        for wallpaperName in recentWallpapersArray! {
+            var nsMenuItem: NSMenuItem = NSMenuItem(title: wallpaperName.removingPercentEncoding ?? "Decode error", action: #selector(AppDelegate.shared.setWallpaper), keyEquivalent: "")
+            nsMenuItem.tag = index
+            recentWallpapersMenu.items.append(nsMenuItem)
+            index += 1
+        }
+        AppDelegate.shared.statusItem.menu!.items[1].submenu = recentWallpapersMenu
+        return true
+    }
+    
     func saveCurrentWallpaper() {
-        if !self.viewModel.settings.changeWallpaper {
+        let viewModel = GlobalSettingsViewModel()
+        if !viewModel.settings.changeWallpaper {
             print("未启用，取消更改系统壁纸")
             return
         }
@@ -231,16 +297,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
     
     func setPlacehoderWallpaper(with wallpaper: WEWallpaper) {
-        if self.viewModel.settings.EnablePlaylist {
-            let hourToSecond = Int(self.viewModel.settings.hourText)! * 3600
-            let minuteToSecond = Int(self.viewModel.settings.minuteText)! * 60
+        let viewModel = GlobalSettingsViewModel()
+        if viewModel.settings.EnablePlaylist {
+            let hourToSecond = Int(viewModel.settings.hourText)! * 3600
+            let minuteToSecond = Int(viewModel.settings.minuteText)! * 60
             let timeInterval = Date().timeIntervalSince1970
             let addTiming: Double = timeInterval + Double(hourToSecond) + Double(minuteToSecond)
             UserDefaults.standard.set(addTiming, forKey: "SwitchWallpaperTiming")
-        }
-        if !self.viewModel.settings.changeWallpaper {
-            print("未启用，取消更改壁纸")
-            return
         }
         if let json = UserDefaults.standard.data(forKey: "CurrentWallpaper"),
            let playingWallpaper = try? JSONDecoder().decode(WEWallpaper.self, from: json) {
@@ -248,6 +311,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
                 print("当前壁纸相同，取消更改")
                 return
             }
+        }
+        let isChange = setRecent(newWallpaperName: wallpaper.wallpaperDirectory.absoluteString.split(separator: "/").compactMap({ "\($0)" }).last!)
+        if !viewModel.settings.changeWallpaper {
+            print("未启用，取消更改壁纸")
+            return
+        }
+        if isChange == false {
+            print("拦截多次更改壁纸")
+            return
         }
         print("更改壁纸")
         switch wallpaper.project.type {

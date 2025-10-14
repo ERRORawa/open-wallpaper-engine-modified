@@ -6,6 +6,7 @@
 //
 
 import Cocoa
+import SwiftUI
 
 extension AppDelegate {
     @objc func mute() {
@@ -62,9 +63,26 @@ extension AppDelegate {
         // Recent Wallpapers Submenu
         let recentWallpapersMenuItem = NSMenuItem(title: String(localized: "Recent Wallpapers"), action: nil, keyEquivalent: "")
         let recentWallpapersMenu = NSMenu(title: String(localized: "Recent Wallpapers"))
-        recentWallpapersMenu.items = [
-            .init(title: "Comming soon", action: nil, keyEquivalent: "")
-        ]
+        var recentWallpapers = UserDefaults.standard.string(forKey: "RecentWallpapers")
+        if recentWallpapers?.isEmpty != false {
+            recentWallpapers = String("|")
+        }
+        let recentWallpapersArray = recentWallpapers?.split(separator: "|").compactMap{ "\($0)" }
+        if recentWallpapersArray!.count < 1 {
+            recentWallpapersMenu.items = [
+                NSMenuItem(title: "No Wallpaper", action: nil, keyEquivalent: "")
+            ]
+        }
+        else {
+            var index = 0
+            recentWallpapersMenu.items = []
+            for wallpaperName in recentWallpapersArray! {
+                var nsMenuItem: NSMenuItem = NSMenuItem(title: wallpaperName.removingPercentEncoding ?? "Decode error", action: #selector(AppDelegate.shared.setWallpaper), keyEquivalent: "")
+                nsMenuItem.tag = index
+                recentWallpapersMenu.items.append(nsMenuItem)
+                index += 1
+            }
+        }
         recentWallpapersMenuItem.submenu = recentWallpapersMenu
         
         let menu = NSMenu()

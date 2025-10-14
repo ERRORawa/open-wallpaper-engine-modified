@@ -11,10 +11,10 @@ extension AppDelegate {
     func setMainMenu() {
         // 主菜单
         let appMenu = NSMenuItem()
-        appMenu.submenu = NSMenu(title: "Open Wallpaper Engine")
+        appMenu.submenu = NSMenu(title: "Open Wallpaper Engine - Modified")
         appMenu.submenu?.items = [
             // 在此处添加子菜单项
-            .init(title: String(localized: "About Open Wallpaper Engine"), action: #selector(self.showAboutUs), keyEquivalent: ""),
+            .init(title: String(localized: "About Open Wallpaper Engine - Modified"), action: #selector(self.showAboutUs), keyEquivalent: ""),
             .separator(),
             .init(title: String(localized: "Settings..."), action: #selector(openSettingsWindow), keyEquivalent: ","),
             .separator(),

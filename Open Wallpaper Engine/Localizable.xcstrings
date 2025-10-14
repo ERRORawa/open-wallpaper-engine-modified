@@ -90,7 +90,14 @@
       }
     },
     "@errorawa" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "@errorawa"
+          }
+        }
+      }
     },
     "@haren724" : {
       "localizations" : {
@@ -103,10 +110,24 @@
       }
     },
     "%@" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        }
+      }
     },
     "%lld" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        }
+      }
     },
     "×8 MSAA is only recommended for powerful high-end desktop graphics cards." : {
       "localizations" : {
@@ -119,7 +140,34 @@
       }
     },
     "1 per page (developer)" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 个/页 (开发者a)"
+          }
+        }
+      }
+    },
+    "5" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5"
+          }
+        }
+      }
+    },
+    "10" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10"
+          }
+        }
+      }
     },
     "10 per page" : {
       "localizations" : {
@@ -127,6 +175,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "10 个/页"
+          }
+        }
+      }
+    },
+    "15" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "15"
+          }
+        }
+      }
+    },
+    "20" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "20"
           }
         }
       }
@@ -178,12 +246,12 @@
         }
       }
     },
-    "About Open Wallpaper Engine" : {
+    "About Open Wallpaper Engine - Modified" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "关于Open Wallpaper Engine"
+            "value" : "关于 Open Wallpaper Engine - Modified"
           }
         }
       }
@@ -269,6 +337,16 @@
         }
       }
     },
+    "And change system wallpaper" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同时更改壁纸"
+          }
+        }
+      }
+    },
     "Anti-aliasing" : {
       "localizations" : {
         "zh-Hans" : {
@@ -294,7 +372,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : ""
+            "value" : "Apple AVKit"
           }
         }
       }
@@ -439,23 +517,22 @@
         }
       }
     },
-    "Change the wallpaper at the same time" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "同时更改壁纸"
-          }
-        }
-      }
-    },
     "Change Wallpaper" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "更换"
+          }
+        }
+      }
+    },
+    "Changing the system wallpaper only takes effect for the current space\nAnd there will be nearly a long delay" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更改系统壁纸仅在当前所在空间有效，并且会有较长的延迟"
           }
         }
       }
@@ -886,7 +963,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "高性能"
           }
         }
@@ -896,7 +973,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "高品质"
           }
         }
@@ -916,7 +993,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "图标尺寸"
           }
         }
@@ -1124,7 +1201,14 @@
       }
     },
     "Modified By" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "维护者"
+          }
+        }
+      }
     },
     "Move to Trash" : {
       "localizations" : {
@@ -1240,7 +1324,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "正常"
           }
         }
@@ -1250,7 +1334,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "好"
           }
         }
@@ -1319,7 +1403,14 @@
       }
     },
     "Open Wallpaper Engine - Modified" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Wallpaper Engine - Modified"
+          }
+        }
+      }
     },
     "Open Wallpaper Engine has no control over this file, you must ensure that it comes from a rellable source before proceeding." : {
       "localizations" : {
@@ -1353,7 +1444,14 @@
       }
     },
     "Original Author" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原作者"
+          }
+        }
+      }
     },
     "Other" : {
       "extractionState" : "manual",
@@ -1637,6 +1735,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "评分"
+          }
+        }
+      }
+    },
+    "Recent wallpaper list count" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近使用的壁纸列表数量"
           }
         }
       }
