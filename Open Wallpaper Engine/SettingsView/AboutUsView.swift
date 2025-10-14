@@ -38,7 +38,7 @@ struct AboutUsView: View {
                 }
                 HStack {
                     Text("Modified By")
-                    Link("@errorawa", destination: URL(string: "https://github.com/haren724")!)
+                    Link("@errorawa", destination: URL(string: "https://github.com/errorawa")!)
                 }
                 .font(.footnote)
             }
