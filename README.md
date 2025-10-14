@@ -1,4 +1,4 @@
-Open Wallpaper Engine
+Open Wallpaper Engine - Modified
 =========
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ERRORawa/open-wallpaper-engine-modified)
