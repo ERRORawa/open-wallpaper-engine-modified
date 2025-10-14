@@ -5,7 +5,7 @@ Open Wallpaper Engine - Modified
 
 一个开源的mac版仿制Wallpaper Engine
 
-=========
+## 介绍
 
 ### 壁纸
 
