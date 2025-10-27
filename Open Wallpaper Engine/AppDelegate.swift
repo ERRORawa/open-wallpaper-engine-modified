@@ -20,6 +20,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
     var wallpaperWindow: NSWindow!
     
+    @Published var changePlayList = -1
+    
     var contentViewModel = ContentViewModel()
     var wallpaperViewModel = WallpaperViewModel()
     var globalSettingsViewModel = GlobalSettingsViewModel()
@@ -35,11 +37,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var viewModel = GlobalSettingsViewModel()
     
     func applicationWillFinishLaunching(_ notification: Notification) {
-        var playList = UserDefaults.standard.string(forKey: "Playlist")
-        if (playList == nil) == false {
-            playList = String("|")
-            UserDefaults.standard.set(playList, forKey: "PlayList")
-        }
         // 创建设置视窗
         setSettingsWindow()
         
@@ -244,7 +241,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
                 return false
             }
         }
-        print("添加壁纸", newWallpaperName)
+        print("添加最近壁纸", newWallpaperName.removingPercentEncoding)
         if newWallpaperName.removingPercentEncoding == "WallpaperNotFound.mp4" {
             print("目前无壁纸")
             return false

@@ -267,6 +267,7 @@
       }
     },
     "Add to Playlist" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -282,6 +283,16 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "添加新的壁纸"
+          }
+        }
+      }
+    },
+    "Add/Remove from Playlist" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加/移除播放列表"
           }
         }
       }

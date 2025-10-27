@@ -13,11 +13,13 @@ struct ExplorerItemMenu: SubviewOfContentView {
     @ObservedObject var wallpaperViewModel: WallpaperViewModel
     
     var hoveredWallpaper: WEWallpaper
+    var index: Int
     
-    init(contentViewModel viewModel: ContentViewModel, wallpaperViewModel: WallpaperViewModel, current hoveredWallpaper: WEWallpaper) {
+    init(contentViewModel viewModel: ContentViewModel, wallpaperViewModel: WallpaperViewModel, current hoveredWallpaper: WEWallpaper, index: Int) {
         self.wallpaperViewModel = wallpaperViewModel
         self.viewModel = viewModel
         self.hoveredWallpaper = hoveredWallpaper
+        self.index = index
     }
     
     var body: some View {
@@ -25,9 +27,10 @@ struct ExplorerItemMenu: SubviewOfContentView {
             Section {
                 Button {
                     viewModel.hoveredWallpaper = hoveredWallpaper
+                    AppDelegate.shared.changePlayList = index
                 } label: {
-                    Label("Add to Playlist", systemImage: "plus")
-                }.disabled(true)
+                    Label("Add/Remove from Playlist", systemImage: "plus")
+                }
                 Button {
                     viewModel.hoveredWallpaper = hoveredWallpaper
                     viewModel.isUnsubscribeConfirming = true

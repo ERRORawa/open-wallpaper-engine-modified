@@ -95,13 +95,11 @@ struct ContentView: View {
                     viewModel.hoveredWallpaper = nil
                     var playList = UserDefaults.standard.string(forKey: "PlayList")
                     let wallpaperName = url.absoluteString.split(separator: "/").compactMap({ "\($0)" }).last!
-                    if playList?.isEmpty == false {
-                        if playList?.contains("|" + wallpaperName + "|") != false {
-                            playList = playList?.replacingOccurrences(of: String(wallpaperName + "|"), with: "")
-                            UserDefaults.standard.removeObject(forKey: wallpaperName)
-                            UserDefaults.standard.set(playList, forKey: "PlayList")
-                            print("移出播放列表")
-                        }
+                    if playList?.contains("|" + wallpaperName + "|") != false {
+                        playList = playList?.replacingOccurrences(of: String(wallpaperName + "|"), with: "")
+                        UserDefaults.standard.removeObject(forKey: wallpaperName)
+                        UserDefaults.standard.set(playList, forKey: "PlayList")
+                        print("移出播放列表")
                     }
                 }
                 Button("Move to Trash") {

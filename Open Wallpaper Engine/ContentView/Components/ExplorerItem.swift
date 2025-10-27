@@ -20,10 +20,11 @@ struct ExplorerItem: SubviewOfContentView {
     init(viewModel: ContentViewModel, wallpaperViewModel: WallpaperViewModel, addPlayListChecked: Bool = false, wallpaper: WEWallpaper, index: Int, playList: [String]? = nil, idList: [Int]? = nil) {
         self.viewModel = viewModel
         self.wallpaperViewModel = wallpaperViewModel
-        self.playList = UserDefaults.standard.string(forKey: "PlayList")
+        self.playList = (UserDefaults.standard.string(forKey: "PlayList") ?? "|")
         self.wallpaper = wallpaper
         self.index = index
         self.wallpaperName = self.wallpaper.wallpaperDirectory.absoluteString.split(separator: "/").compactMap({ "\($0)" }).last!
+        
         if UserDefaults.standard.object(forKey: self.wallpaperName) == nil {
             print("未找到持久化数据，重新生成: ", self.wallpaperName.removingPercentEncoding ?? "无壁纸")
             UserDefaults.standard.set(try! JSONEncoder().encode(self.wallpaper), forKey: self.wallpaperName)
@@ -46,15 +47,28 @@ var body: some View {
             .onTapGesture {
                 wallpaperViewModel.nextCurrentWallpaper = wallpaper
             }
+            .onReceive(AppDelegate.shared.$changePlayList) { newValue in
+                if newValue == index {
+                    print("更改播放列表，视频序号：", index)
+                    AppDelegate.shared.changePlayList = -1
+                    playList = (UserDefaults.standard.string(forKey: "PlayList") ?? "|")
+                    if (playList?.contains("|" + wallpaperName + "|")) == false {
+                        playList = String((playList ?? "|") + wallpaperName + "|")
+                        UserDefaults.standard.set(try! JSONEncoder().encode(wallpaper), forKey: wallpaperName)
+                    }
+                    else{
+                        playList = playList?.replacingOccurrences(of: String(wallpaperName + "|"), with: "")
+                        UserDefaults.standard.removeObject(forKey: wallpaperName)
+                    }
+                    UserDefaults.standard.set(playList, forKey: "PlayList")
+                }
+            }
             VStack(alignment: .trailing) {
                 Toggle("", isOn: Binding<Bool>(get: {
                     playList?.contains("|" + wallpaperName + "|") != false
                 }, set: {
-                    playList = UserDefaults.standard.string(forKey: "PlayList")
+                    playList = (UserDefaults.standard.string(forKey: "PlayList") ?? "|")
                     if $0 {
-                        if playList?.isEmpty != false {
-                            playList = String("|")
-                        }
                         if (playList?.contains("|" + wallpaperName + "|")) == false {
                             playList = String((playList ?? "|") + wallpaperName + "|")
                             UserDefaults.standard.set(try! JSONEncoder().encode(wallpaper), forKey: wallpaperName)
@@ -66,7 +80,7 @@ var body: some View {
                         }
                     }
                     UserDefaults.standard.set(playList, forKey: "PlayList")
-                    print(String("列表: " + (playList ?? "|")))
+                    print(String("列表: " + (playList ?? "错误")))
                 }))
                 Spacer()
                 Text(wallpaper.project.title)

@@ -15,7 +15,6 @@ class VideoWallpaperViewModel: ObservableObject {
         }
     }
     
-    var viewModel = GlobalSettingsViewModel()
     
     var playRate: Float = 0 {
         willSet {
@@ -46,17 +45,18 @@ class VideoWallpaperViewModel: ObservableObject {
     func setWallpaper(wallpaperName: String) {
         if let json = UserDefaults.standard.data(forKey: wallpaperName),
            let wallpaper = try? JSONDecoder().decode(WEWallpaper.self, from: json) {
-            currentWallpaper = wallpaper
+            AppDelegate.shared.wallpaperViewModel.nextCurrentWallpaper = wallpaper
             AppDelegate.shared.saveCurrentWallpaper()
             AppDelegate.shared.setPlacehoderWallpaper(with: wallpaper)
-            UserDefaults.standard.set(try! JSONEncoder().encode(currentWallpaper), forKey: "CurrentWallpaper")
+            UserDefaults.standard.set(try! JSONEncoder().encode(wallpaper), forKey: "CurrentWallpaper")
         } else {
-            currentWallpaper = WEWallpaper(using: .invalid, where: Bundle.main.url(forResource: "WallpaperNotFound", withExtension: "mp4")!)
+            AppDelegate.shared.wallpaperViewModel.nextCurrentWallpaper = WEWallpaper(using: .invalid, where: Bundle.main.url(forResource: "WallpaperNotFound", withExtension: "mp4")!)
         }
     }
     
     @objc private func playerDidFinishPlaying(_ notification: Notification) {
         print("replaying...")
+        let viewModel = GlobalSettingsViewModel()
         let playList = UserDefaults.standard.string(forKey: "PlayList")?.split(separator: "|").compactMap{ "\($0)" }
         if (playList == nil) == false {
             if viewModel.settings.EnablePlaylist == true {
@@ -87,11 +87,10 @@ class VideoWallpaperViewModel: ObservableObject {
                                     setWallpaper(wallpaperName: playList![randomIndex])
                                 }
                                 else {
-                                    @State var nextWallpaperIndex = -1
-                                    let index = 0
-                                    for name in wallpaperName {
-                                        if(String(name) == playList![index]) {
-                                            if(index != (playList!.count - 1)){
+                                    var nextWallpaperIndex = -1
+                                    for index in stride(from: 0, through: playList!.count - 1, by: 1) {
+                                        if wallpaperName == playList![index] {
+                                            if index != (playList!.count - 1){
                                                 nextWallpaperIndex = index + 1
                                             }
                                             else {
@@ -99,14 +98,18 @@ class VideoWallpaperViewModel: ObservableObject {
                                             }
                                         }
                                     }
-                                    print("下一个壁纸: ", playList![nextWallpaperIndex].removingPercentEncoding ?? "", "序号: ", nextWallpaperIndex)
                                     if nextWallpaperIndex != -1 {
                                         setWallpaper(wallpaperName: playList![nextWallpaperIndex])
+                                        print("下一个壁纸: ", playList![nextWallpaperIndex].removingPercentEncoding ?? "", "序号: ", nextWallpaperIndex)
+                                    }
+                                    else {
+                                        setWallpaper(wallpaperName: playList![0])
+                                        print("未找到当前播放的壁纸：", wallpaperName.removingPercentEncoding!, "\n从头播放：", playList![0].removingPercentEncoding ?? "");
                                     }
                                 }
                             } else {
                                 print("切换时间戳: ", switchTiming, "当前时间戳:  ", timeInterval)
-                                print("播放列表数量: ", playList?.count)
+                                print("播放列表数量: ", playList!.count)
                             }
                         }
                     }
