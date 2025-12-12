@@ -27,8 +27,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var globalSettingsViewModel = GlobalSettingsViewModel()
     
     var importOpenPanel: NSOpenPanel!
+    var nsView = WKWebView(frame: .zero)
     
-    var recentWallpaper: String = ""
+    @Published var webProperties:  NSMutableDictionary = [:]
     
     var eventHandler: Any?
     

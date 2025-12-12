@@ -29,9 +29,9 @@ class WebWallpaperViewModel: NSObject, ObservableObject, WKNavigationDelegate {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-    
+
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        let javascriptStyle = "var css = '*{-webkit-touch-callout:none;-webkit-user-select:none}'; var head = document.head || document.getElementsByTagName('head')[0]; var style = document.createElement('style'); style.type = 'text/css'; style.appendChild(document.createTextNode(css)); head.appendChild(style);"
+        let javascriptStyle = "wallpaperPropertyListener.applyUserProperties(properties)"
         webView.evaluateJavaScript(javascriptStyle, completionHandler: nil)
         
         if AppDelegate.shared.globalSettingsViewModel.settings.adjustMenuBarTint {

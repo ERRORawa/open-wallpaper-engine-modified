@@ -13,6 +13,54 @@ struct WallpaperPreview: SubviewOfContentView {
     
     @Environment(\.undoManager) var undoManager
     
+    @State var dictKeys: [String] = []
+    @State var sliderValues: [String: Int] = [:]
+    @State var comboValues: [String: String] = [:]
+    
+    func sliderBinding(for key: String) -> Binding<Double> {
+        Binding<Double>(
+            get: { Double(sliderValues[key] ?? 0) },
+            set: { newValue in sliderValues[key] = Int(newValue) }
+        )
+    }
+    
+    func comboBinding(for key: String) -> Binding<String> {
+        Binding<String>(
+            get: { comboValues[key] ?? "" },
+            set: { newValue in
+                comboValues[key] = newValue
+                let newDict = AppDelegate.shared.webProperties[key] as!  NSMutableDictionary
+                newDict["value"] = comboValues[key]
+                AppDelegate.shared.webProperties[key] = newDict
+                updateProperties()
+            }
+        )
+    }
+    
+    func convertDictToJSONString(dict:  NSMutableDictionary, prettyPrinted: Bool = false) -> String? {
+        do {
+            let options: JSONSerialization.WritingOptions = prettyPrinted ? .prettyPrinted : []
+            
+            let jsonData = try JSONSerialization.data(withJSONObject: dict, options: options)
+            
+            guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+                return nil
+            }
+            return jsonString
+            
+        } catch {
+            return nil
+        }
+    }
+    
+    func updateProperties() {
+        var javascriptStyle = ""
+        if let propertiesString = convertDictToJSONString(dict: AppDelegate.shared.webProperties) {
+            javascriptStyle = "window.properties = \(propertiesString);wallpaperPropertyListener.applyUserProperties(properties)"
+        }
+        AppDelegate.shared.nsView.evaluateJavaScript(javascriptStyle, completionHandler: nil)
+    }
+    
     @State var isEditingId = ""
     @State var title = ""
     @State var newTag = ""
@@ -208,7 +256,63 @@ struct WallpaperPreview: SubviewOfContentView {
                                     .frame(width: 35)
                             }
                         case "web":
-                            EmptyView()
+                            VStack {
+                                ForEach(dictKeys, id: \.self) { key in
+                                    let dict = AppDelegate.shared.webProperties[key] as!  NSMutableDictionary
+                                    let label = dict["text"] as! String
+                                    let type = dict["type"] as! String
+                                    switch type {
+                                    case "slider":
+                                        let min = dict["min"] as! Double
+                                        let max = dict["max"] as! Double
+                                        let value = dict["value"] as! Int
+                                        HStack {
+                                            Label(label, systemImage: "")
+                                            Spacer()
+                                            Slider(
+                                                value: sliderBinding(for: key),
+                                                in: min...max,
+                                                onEditingChanged: { isEditing in
+                                                    if !isEditing {
+                                                        let newDict = AppDelegate.shared.webProperties[key] as!  NSMutableDictionary
+                                                        newDict["value"] = sliderValues[key]
+                                                        AppDelegate.shared.webProperties[key] = newDict
+                                                        updateProperties()
+                                                    }
+                                                }
+                                            )
+                                                .frame(width: 80)
+                                            Text("\(sliderValues[key] ?? 0)")
+                                                .frame(width: 30)
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.1)
+                                        }
+                                        .onAppear {
+                                            sliderValues[key] = value
+                                        }
+                                    case "combo":
+                                        let options = dict["options"] as! [[String: String]]
+                                        let value = dict["value"] as! String
+                                        HStack {
+                                            Label(label, systemImage: "")
+                                            Spacer()
+                                            Picker(selection: comboBinding(for: key), label: Text("")) {
+                                                ForEach(options, id: \.["value"]) { option in
+                                                    Text(option["label"]!).tag(option["value"]!)
+                                                }
+                                            }
+                                        }
+                                        .onAppear {
+                                            comboValues[key] = value
+                                        }
+                                    default:
+                                        Text("\(label): \(key) 未适配")
+                                    }
+                                }
+                            }
+                            .onReceive(AppDelegate.shared.$webProperties) { newDict in
+                                dictKeys = newDict.allKeys.compactMap { $0 as! String }.filter { $0 != "schemecolor" }.reversed()
+                            }
                         default:
                             EmptyView()
                         }
