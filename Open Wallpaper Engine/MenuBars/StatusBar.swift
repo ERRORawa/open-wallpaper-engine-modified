@@ -74,13 +74,15 @@ extension AppDelegate {
             ]
         }
         else {
-            var index = 0
             recentWallpapersMenu.items = []
             for wallpaperName in recentWallpapersArray! {
-                var nsMenuItem: NSMenuItem = NSMenuItem(title: wallpaperName.removingPercentEncoding ?? "Decode error", action: #selector(AppDelegate.shared.setWallpaper), keyEquivalent: "")
-                nsMenuItem.tag = index
+                var metaInfo = wallpaperName.split(separator: "˘").compactMap{ "\($0)" }
+                if metaInfo.count < 2 {
+                    metaInfo.append(wallpaperName.removingPercentEncoding!)
+                }
+                let nsMenuItem: NSMenuItem = NSMenuItem(title: metaInfo[1], action: #selector(AppDelegate.shared.setWallpaper), keyEquivalent: "")
+                nsMenuItem.representedObject = metaInfo[0]
                 recentWallpapersMenu.items.append(nsMenuItem)
-                index += 1
             }
         }
         recentWallpapersMenuItem.submenu = recentWallpapersMenu

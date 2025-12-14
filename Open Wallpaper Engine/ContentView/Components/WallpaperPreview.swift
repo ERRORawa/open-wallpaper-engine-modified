@@ -15,7 +15,14 @@ struct WallpaperPreview: SubviewOfContentView {
     
     @State var dictKeys: [String] = []
     @State var sliderValues: [String: Int] = [:]
-    @State var comboValues: [String: String] = [:]
+    @State var stringComboValues: [String: String] = [:]
+    @State var intComboValues: [String: Int] = [:]
+    @State var toggleValues: [String: Bool] = [:]
+    @State var fileValues: [String: URL] = [:]
+    @State var showFilePicker = false
+    @State var isCancle = false
+    @State var fileKey = ""
+    @State var lastFile = "noFile.noFile"
     
     func sliderBinding(for key: String) -> Binding<Double> {
         Binding<Double>(
@@ -24,15 +31,32 @@ struct WallpaperPreview: SubviewOfContentView {
         )
     }
     
-    func comboBinding(for key: String) -> Binding<String> {
+    func stringComboBinding(for key: String) -> Binding<String> {
         Binding<String>(
-            get: { comboValues[key] ?? "" },
+            get: { stringComboValues[key] ?? "" },
             set: { newValue in
-                comboValues[key] = newValue
-                let newDict = AppDelegate.shared.webProperties[key] as!  NSMutableDictionary
-                newDict["value"] = comboValues[key]
-                AppDelegate.shared.webProperties[key] = newDict
-                updateProperties()
+                stringComboValues[key] = newValue
+                updateProperties(key: key, value: stringComboValues[key]!)
+            }
+        )
+    }
+    
+    func intComboBinding(for key: String) -> Binding<Int> {
+        Binding<Int>(
+            get: { intComboValues[key] ?? 0 },
+            set: { newValue in
+                intComboValues[key] = newValue
+                updateProperties(key: key, value: intComboValues[key]!)
+            }
+        )
+    }
+    
+    func toggleBinding(for key: String) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { toggleValues[key] ?? false },
+            set: { newValue in
+                toggleValues[key] = newValue
+                updateProperties(key: key, value: toggleValues[key]!)
             }
         )
     }
@@ -53,12 +77,66 @@ struct WallpaperPreview: SubviewOfContentView {
         }
     }
     
-    func updateProperties() {
+    func updateProperties(key: String, value: Any) {
+        let newDict = AppDelegate.shared.webProperties[key] as! NSMutableDictionary
+        newDict["value"] = value
+        AppDelegate.shared.webProperties[key] = newDict
+        let newJS = AppDelegate.shared.webProperties
+        if newDict["type"] as! String == "file" {
+            if isCancle {
+                isCancle = false
+                print("用户取消操作")
+                return
+            }
+            let fileURL = value as! URL
+            if fileURL.lastPathComponent == "remove" {
+                newDict.removeObject(forKey: "value")
+                fileValues.removeValue(forKey: key)
+                let wallpaperDir = wallpaperViewModel.currentWallpaper.wallpaperDirectory
+                let lastURL = wallpaperDir.appendingPathComponent(lastFile)
+                do {
+                    if FileManager.default.fileExists(atPath: lastURL.path()) {
+                        try FileManager.default.removeItem(at: lastURL)
+                    }
+                } catch {
+                    print("删除文件失败：\(error.localizedDescription)")
+                }
+                lastFile = "noFile.noFile"
+            } else {
+                let wallpaperDir = wallpaperViewModel.currentWallpaper.wallpaperDirectory
+                var fileName = fileURL.lastPathComponent
+                if fileName == lastFile {
+                    fileName = "1" + lastFile
+                }
+                let destURL = wallpaperDir.appendingPathComponent(fileName)
+                let lastURL = wallpaperDir.appendingPathComponent(lastFile)
+                do {
+                    if FileManager.default.fileExists(atPath: lastURL.path()) {
+                        try FileManager.default.removeItem(at: lastURL)
+                    }
+                    if FileManager.default.fileExists(atPath: destURL.path()) {
+                        try FileManager.default.removeItem(at: destURL)
+                    }
+                    try FileManager.default.copyItem(at: fileURL, to: destURL)
+                } catch {
+                    print("复制文件失败：\(error.localizedDescription)")
+                }
+                lastFile = fileName
+                newDict["value"] = destURL.path()
+            }
+            newJS[key] = newDict
+        }
         var javascriptStyle = ""
-        if let propertiesString = convertDictToJSONString(dict: AppDelegate.shared.webProperties) {
+        if let propertiesString = convertDictToJSONString(dict: newJS) {
             javascriptStyle = "window.properties = \(propertiesString);wallpaperPropertyListener.applyUserProperties(properties)"
+            print(javascriptStyle)
         }
         AppDelegate.shared.nsView.evaluateJavaScript(javascriptStyle, completionHandler: nil)
+    }
+    
+    func log(any: Any) -> Bool {
+        print(any)
+        return false
     }
     
     @State var isEditingId = ""
@@ -259,8 +337,11 @@ struct WallpaperPreview: SubviewOfContentView {
                             VStack {
                                 ForEach(dictKeys, id: \.self) { key in
                                     let dict = AppDelegate.shared.webProperties[key] as!  NSMutableDictionary
+                                    if log(any: key) {
+                                        
+                                    }
                                     let label = dict["text"] as! String
-                                    let type = dict["type"] as! String
+                                    let type = dict["type"] as? String ?? "No Type"
                                     switch type {
                                     case "slider":
                                         let min = dict["min"] as! Double
@@ -274,10 +355,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                                 in: min...max,
                                                 onEditingChanged: { isEditing in
                                                     if !isEditing {
-                                                        let newDict = AppDelegate.shared.webProperties[key] as!  NSMutableDictionary
-                                                        newDict["value"] = sliderValues[key]
-                                                        AppDelegate.shared.webProperties[key] = newDict
-                                                        updateProperties()
+                                                        updateProperties(key: key, value: sliderValues[key]!)
                                                     }
                                                 }
                                             )
@@ -291,27 +369,136 @@ struct WallpaperPreview: SubviewOfContentView {
                                             sliderValues[key] = value
                                         }
                                     case "combo":
-                                        let options = dict["options"] as! [[String: String]]
-                                        let value = dict["value"] as! String
+                                        let stringOptions = dict["options"] as? [[String: String]]
+                                        if stringOptions != nil {
+                                            let value = dict["value"] as? String ?? ""
+                                            HStack {
+                                                Label(label, systemImage: "")
+                                                Spacer()
+                                                Picker("", selection: stringComboBinding(for: key)) {
+                                                    ForEach(stringOptions!, id: \.["value"]) { option in
+                                                        Text(option["label"]!).tag(option["value"]!)
+                                                    }
+                                                }
+                                            }
+                                            .onAppear {
+                                                stringComboValues[key] = value
+                                            }
+                                        } else {
+                                            let options = dict["options"] as? [[String: Any]]
+                                            var parsedOptions: [(label: String, value: Int)] {
+                                                options!.compactMap { dict in
+                                                    guard let label = dict["label"] as? String,
+                                                          let valueNum = dict["value"] as? NSNumber,
+                                                          let value = Int(exactly: valueNum) else {
+                                                        return nil
+                                                    }
+                                                    return (label: label, value: value)
+                                                }
+                                            }
+                                            let value = dict["value"] as? Int ?? 0
+                                            HStack {
+                                                Label(label, systemImage: "")
+                                                Spacer()
+                                                Picker("", selection: intComboBinding(for: key)) {
+                                                    ForEach(parsedOptions, id: \.value) { option in
+                                                        Text(option.label).tag(option.value)
+                                                    }
+                                                }
+                                            }
+                                            .onAppear {
+                                                intComboValues[key] = value
+                                            }
+                                        }
+                                    case "bool":
+                                        let value = dict["value"] as? Bool ?? false
                                         HStack {
                                             Label(label, systemImage: "")
                                             Spacer()
-                                            Picker(selection: comboBinding(for: key), label: Text("")) {
-                                                ForEach(options, id: \.["value"]) { option in
-                                                    Text(option["label"]!).tag(option["value"]!)
+                                            Toggle("", isOn: toggleBinding(for: key))
+                                        }
+                                        .onAppear {
+                                            toggleValues[key] = value
+                                        }
+                                    case "file":
+                                        let value = ""
+                                        HStack {
+                                            Label(label, systemImage: "")
+                                            Spacer()
+                                            VStack {
+                                                if fileValues[key]?.lastPathComponent ?? "" == ""{
+                                                    HStack {
+                                                        Text("Nothing Imported")
+                                                            .scaleEffect(0.8, anchor: .bottom)
+                                                    }
+                                                    .offset(y: 5)
+                                                    HStack {
+                                                        Button() {
+                                                            fileKey = key
+                                                            showFilePicker = true
+                                                            ImageFilePicker(fileValues: $fileValues, isPresented: $showFilePicker, isCancle: $isCancle, key: fileKey).showPanel()
+                                                            updateProperties(key: key, value: fileValues[key] ?? "")
+                                                        } label: {
+                                                            Image(systemName: "pencil.line")
+                                                                .foregroundColor(Color(NSColor.systemBlue))
+                                                                .frame(height: 16)
+                                                            Text("Select file")
+                                                        }
+                                                    }
+                                                }
+                                                else {
+                                                    HStack {
+                                                        Text(fileValues[key]?.lastPathComponent ?? "ERROR")
+                                                            .scaleEffect(0.8, anchor: .bottom)
+                                                    }
+                                                    .offset(y: 5)
+                                                    HStack {
+                                                        Button() {
+                                                            fileKey = key
+                                                            showFilePicker = true
+                                                            ImageFilePicker(fileValues: $fileValues, isPresented: $showFilePicker, isCancle: $isCancle, key: fileKey).showPanel()
+                                                            updateProperties(key: key, value: fileValues[key]!)
+                                                        } label: {
+                                                            Image(systemName: "pencil.line")
+                                                                .foregroundColor(Color(NSColor.systemBlue))
+                                                                .frame(height: 16)
+                                                        }
+                                                        
+                                                        Button() {
+                                                            let workspace = NSWorkspace.shared
+                                                            let wallpaperDirectory = wallpaperViewModel.currentWallpaper.wallpaperDirectory
+                                                            workspace.activateFileViewerSelecting([wallpaperDirectory.appendingPathComponent(lastFile)])
+                                                        } label: {
+                                                            Image(systemName: "folder.fill")
+                                                                .foregroundColor(Color(NSColor.systemBlue))
+                                                                .frame(height: 16)
+                                                        }
+                                                        
+                                                        Button() {
+                                                            fileKey = key
+                                                            fileValues[key] = URL(filePath: "remove")
+                                                            updateProperties(key: key, value: fileValues[key]!)
+                                                        } label: {
+                                                            Image(systemName: "trash.fill")
+                                                                .foregroundColor(.white)
+                                                                .frame(height: 16)
+                                                        }
+                                                        .tint(Color(NSColor.systemRed))
+                                                        .buttonStyle(.borderedProminent)
+                                                    }
                                                 }
                                             }
                                         }
                                         .onAppear {
-                                            comboValues[key] = value
+                                            fileValues[key] = URL(string: value)
                                         }
                                     default:
-                                        Text("\(label): \(key) 未适配")
+                                        Text("\(label): \(key) NotSupport")
                                     }
                                 }
                             }
                             .onReceive(AppDelegate.shared.$webProperties) { newDict in
-                                dictKeys = newDict.allKeys.compactMap { $0 as! String }.filter { $0 != "schemecolor" }.reversed()
+                                dictKeys = newDict.allKeys.compactMap { ($0 as! String) }.filter { $0 != "schemecolor" }
                             }
                         default:
                             EmptyView()

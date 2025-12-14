@@ -119,12 +119,18 @@
         }
       }
     },
-    "%@: %@ 未适配" : {
+    "%@: %@ NotSupport" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@: %2$@ 未适配"
+            "value" : "%1$@: %2$@ NotSupport"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@ 不支持"
           }
         }
       }
@@ -277,11 +283,11 @@
       }
     },
     "Add to Playlist" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "添加到播放列表"
           }
         }
@@ -291,7 +297,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "添加新的壁纸"
           }
         }
@@ -311,7 +317,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "调整菜单栏颜色"
           }
         }
@@ -321,7 +327,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "高级"
           }
         }
@@ -331,7 +337,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "年龄分级"
           }
         }
@@ -341,7 +347,7 @@
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "全选"
           }
         }
@@ -879,7 +885,7 @@
       }
     },
     "Fully take over" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1161,7 +1167,7 @@
       }
     },
     "Made with ❤️ by" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1351,6 +1357,16 @@
         }
       }
     },
+    "Nothing Imported" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未导入任何内容"
+          }
+        }
+      }
+    },
     "OK" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1362,7 +1378,7 @@
       }
     },
     "Only enabled when app is running" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1413,7 +1429,7 @@
       }
     },
     "Open Wallpaper Engine" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1710,7 +1726,7 @@
       }
     },
     "Protect against crashes" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1931,7 +1947,7 @@
       }
     },
     "Safe start after hibernation" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1987,6 +2003,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全选"
+          }
+        }
+      }
+    },
+    "Select file" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择文件"
           }
         }
       }

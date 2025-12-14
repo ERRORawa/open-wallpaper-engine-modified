@@ -34,7 +34,7 @@ class WebWallpaperViewModel: NSObject, ObservableObject, WKNavigationDelegate {
         let javascriptStyle = "wallpaperPropertyListener.applyUserProperties(properties)"
         webView.evaluateJavaScript(javascriptStyle, completionHandler: nil)
         
-        if AppDelegate.shared.globalSettingsViewModel.settings.adjustMenuBarTint {
+        if AppDelegate.shared.viewModel.settings.adjustMenuBarTint {
             webView.takeSnapshot(with: nil) { [weak self] nsImage, error in
                 guard let self = self else { return }
                 if let data = nsImage?.tiffRepresentation {

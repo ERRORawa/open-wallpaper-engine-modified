@@ -46,9 +46,6 @@ class VideoWallpaperViewModel: ObservableObject {
         if let json = UserDefaults.standard.data(forKey: wallpaperName),
            let wallpaper = try? JSONDecoder().decode(WEWallpaper.self, from: json) {
             AppDelegate.shared.wallpaperViewModel.nextCurrentWallpaper = wallpaper
-            AppDelegate.shared.saveCurrentWallpaper()
-            AppDelegate.shared.setPlacehoderWallpaper(with: wallpaper)
-            UserDefaults.standard.set(try! JSONEncoder().encode(wallpaper), forKey: "CurrentWallpaper")
         } else {
             AppDelegate.shared.wallpaperViewModel.nextCurrentWallpaper = WEWallpaper(using: .invalid, where: Bundle.main.url(forResource: "WallpaperNotFound", withExtension: "mp4")!)
         }
@@ -56,65 +53,30 @@ class VideoWallpaperViewModel: ObservableObject {
     
     @objc private func playerDidFinishPlaying(_ notification: Notification) {
         print("replaying...")
-        let viewModel = GlobalSettingsViewModel()
-        let playList = UserDefaults.standard.string(forKey: "PlayList")?.split(separator: "|").compactMap{ "\($0)" }
-        if (playList == nil) == false {
-            if viewModel.settings.EnablePlaylist == true {
-                if playList!.count > 1 {
-                    if UserDefaults.standard.object(forKey: "SwitchWallpaperTiming") != nil {
-                        if viewModel.settings.hourText == "0" && viewModel.settings.minuteText == "0" {
-                            print("切换壁纸时间错误，取消切换");
-                        }
-                        else {
-                            let switchTiming = UserDefaults.standard.double(forKey: "SwitchWallpaperTiming")
-                            let timeInterval = Date().timeIntervalSince1970
-                            if timeInterval > switchTiming {
-                                print("模式: ", viewModel.settings.playOrder)
-                                let wallpaperName = self.currentWallpaper.wallpaperDirectory.absoluteString.split(separator: "/").compactMap({ "\($0)" }).last!
-                                if viewModel.settings.playOrder == "Random" {
-                                    var isSame = true
-                                    var randomIndex = 0
-                                    while isSame {
-                                        randomIndex = Int.random(in: 0...((playList?.count ?? 0) - 1))
-                                        if playList![randomIndex] == wallpaperName {
-                                            print("壁纸相同，重新随机")
-                                        }
-                                        else {
-                                            isSame = false
-                                        }
-                                    }
-                                    print("随机壁纸: ", playList![randomIndex].removingPercentEncoding ?? "", "\n序号: ", randomIndex)
-                                    setWallpaper(wallpaperName: playList![randomIndex])
+        if AppDelegate.shared.viewModel.settings.switchAfterFinish {
+            let viewModel = AppDelegate.shared.viewModel
+            let playList = UserDefaults.standard.string(forKey: "PlayList")?.split(separator: "|").compactMap{ "\($0)" }
+            if !(playList == nil) {
+                if viewModel.settings.EnablePlaylist {
+                    if playList!.count > 1 {
+                        if UserDefaults.standard.object(forKey: "SwitchWallpaperTiming") != nil {
+                            if viewModel.settings.hourText == "0" && viewModel.settings.minuteText == "0" {
+                                print("切换壁纸时间错误，取消切换");
+                            }
+                            else {
+                                let switchTiming = UserDefaults.standard.double(forKey: "SwitchWallpaperTiming")
+                                let timeInterval = Date().timeIntervalSince1970
+                                if timeInterval > switchTiming {
+                                    AppDelegate.shared.switchPlayList()
+                                } else {
+                                    print("切换时间戳: ", switchTiming, "当前时间戳:  ", timeInterval)
+                                    print("播放列表数量: ", playList!.count)
                                 }
-                                else {
-                                    var nextWallpaperIndex = -1
-                                    for index in stride(from: 0, through: playList!.count - 1, by: 1) {
-                                        if wallpaperName == playList![index] {
-                                            if index != (playList!.count - 1){
-                                                nextWallpaperIndex = index + 1
-                                            }
-                                            else {
-                                                nextWallpaperIndex = 0
-                                            }
-                                        }
-                                    }
-                                    if nextWallpaperIndex != -1 {
-                                        setWallpaper(wallpaperName: playList![nextWallpaperIndex])
-                                        print("下一个壁纸: ", playList![nextWallpaperIndex].removingPercentEncoding ?? "", "序号: ", nextWallpaperIndex)
-                                    }
-                                    else {
-                                        setWallpaper(wallpaperName: playList![0])
-                                        print("未找到当前播放的壁纸：", wallpaperName.removingPercentEncoding!, "\n从头播放：", playList![0].removingPercentEncoding ?? "");
-                                    }
-                                }
-                            } else {
-                                print("切换时间戳: ", switchTiming, "当前时间戳:  ", timeInterval)
-                                print("播放列表数量: ", playList!.count)
                             }
                         }
+                    } else {
+                        print("播放列表壁纸过少，取消切换")
                     }
-                } else {
-                    print("播放列表壁纸过少，取消切换")
                 }
             }
         }
