@@ -95,5 +95,6 @@ var body: some View {
         }
         .selected(wallpaper.wallpaperDirectory == wallpaperViewModel.currentWallpaper.wallpaperDirectory)
         .border(Color.accentColor, width: viewModel.imageScaleIndex == index ? 1.0 : 0)
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

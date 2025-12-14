@@ -46,5 +46,6 @@ struct ExplorerBottomBar: View {
                 Spacer()
             }
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

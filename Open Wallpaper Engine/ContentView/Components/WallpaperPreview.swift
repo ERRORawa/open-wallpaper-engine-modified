@@ -337,9 +337,6 @@ struct WallpaperPreview: SubviewOfContentView {
                             VStack {
                                 ForEach(dictKeys, id: \.self) { key in
                                     let dict = AppDelegate.shared.webProperties[key] as!  NSMutableDictionary
-                                    if log(any: key) {
-                                        
-                                    }
                                     let label = dict["text"] as! String
                                     let type = dict["type"] as? String ?? "No Type"
                                     switch type {
@@ -570,6 +567,7 @@ struct WallpaperPreview: SubviewOfContentView {
             }
             .padding()
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
     
     /// Shows all tags about current wallpaper in horizontal

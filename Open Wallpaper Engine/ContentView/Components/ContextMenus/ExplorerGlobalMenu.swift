@@ -38,13 +38,12 @@ struct ExplorerGlobalMenu: SubviewOfContentView {
                         Text("10 per page").tag(10)
                         Text("25 per page").tag(25)
                         Text("50 per page").tag(50)
-                        Text("1 per page (developer)").tag(1)
-                        Text("1 per page (developer)").tag(2)
                     }
                     .pickerStyle(.inline)
                 }
             }
         }
         .labelStyle(.titleAndIcon)
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

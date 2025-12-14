@@ -198,5 +198,6 @@ struct PerformancePage: SettingsPage {
             }
         }
         .formStyle(.grouped)
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

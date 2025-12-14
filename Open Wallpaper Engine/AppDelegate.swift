@@ -13,6 +13,8 @@ import WebKit
 
 class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
+    var languageState = LanguageState()
+    
     var statusItem: NSStatusItem!
     var settingsWindow: NSWindow!
     
@@ -28,9 +30,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var importOpenPanel: NSOpenPanel!
     var nsView = WKWebView(frame: .zero)
     
-    @Published var webProperties:  NSMutableDictionary = [:]
+    @Published var webProperties: NSMutableDictionary = [:]
+    @Published var webLocalization: NSMutableDictionary = [:]
     
-    @Published var timer: Timer?
+    var timer: Timer?
     
     var eventHandler: Any?
     

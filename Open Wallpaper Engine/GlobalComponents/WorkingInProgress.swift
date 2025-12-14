@@ -33,5 +33,6 @@ struct WorkingInProgress: View {
             }
             Text("Working on it")
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

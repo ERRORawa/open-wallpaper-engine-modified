@@ -120,5 +120,6 @@ struct TopTabBar: SubviewOfContentView {
                 .frame(height: 4)
                 .overlay(Color.accentColor)
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

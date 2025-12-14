@@ -65,6 +65,7 @@ struct WallpaperExplorer: SubviewOfContentView {
                 .padding(.bottom)
             }
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }
 

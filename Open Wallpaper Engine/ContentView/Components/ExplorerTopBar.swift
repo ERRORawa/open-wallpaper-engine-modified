@@ -57,5 +57,6 @@ struct ExplorerTopBar: SubviewOfContentView {
             }
             .frame(width: 160)
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

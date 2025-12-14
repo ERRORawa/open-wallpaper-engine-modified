@@ -7,19 +7,27 @@
 
 import SwiftUI
 
-final class AppState: ObservableObject {
+final class LanguageState: ObservableObject {
     
-    @Published var localeIdentifier: String = "en-US"
+    var localeIdentifier: String = "en-US"
     
     init() {
-        var id = Locale.current.identifier;
+        localeIdentifier = Locale.current.identifier;
         if let identifier = UserDefaults.standard.string(forKey: "locale_identifier") {
-            if identifier != "system" {
-                id = identifier
-            }
+            localeIdentifier = identifier
         }
-        if id.hasPrefix("zh") {
-            _localeIdentifier = Published(initialValue: "zh-CN")
+    }
+    
+    func setLanguage(code: String) {
+        if code == localeIdentifier {
+            return
+        }
+        if code == "system" {
+            localeIdentifier = Locale.current.identifier
+            UserDefaults.standard.removeObject(forKey: "locale_identifier")
+        } else {
+            localeIdentifier = code
+            UserDefaults.standard.set(code, forKey: "locale_identifier")
         }
     }
 }

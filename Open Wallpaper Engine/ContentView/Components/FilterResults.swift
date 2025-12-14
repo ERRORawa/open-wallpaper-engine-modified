@@ -43,6 +43,7 @@ struct FilterSection<Content>: View where Content: View {
                 content.padding(.leading, (self.alignment == .leading) ? 10 : 0)
             }
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }
 
@@ -381,5 +382,6 @@ struct FilterResults: View {
             .lineLimit(1)
         }
         Divider()
+            .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

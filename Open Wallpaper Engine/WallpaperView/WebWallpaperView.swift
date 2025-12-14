@@ -32,7 +32,7 @@ struct WebWallpaperView: NSViewRepresentable {
         }
     }
     
-    func convertDictToJSONString(dict:  NSMutableDictionary, prettyPrinted: Bool = false) -> String? {
+    func convertDictToJSONString(dict: NSMutableDictionary, prettyPrinted: Bool = false) -> String? {
         do {
             let options: JSONSerialization.WritingOptions = prettyPrinted ? .prettyPrinted : []
             
@@ -48,9 +48,10 @@ struct WebWallpaperView: NSViewRepresentable {
         }
     }
     
-    func extractPropertiesDict(from rootDict:  NSMutableDictionary, tree: String) ->  NSMutableDictionary? {
-        let general = rootDict["general"] as?  NSMutableDictionary
-        let properties = general!["properties"] as?  NSMutableDictionary
+    func extractPropertiesDict(from rootDict: NSMutableDictionary) -> NSMutableDictionary? {
+        let general = rootDict["general"] as? NSMutableDictionary
+        AppDelegate.shared.webLocalization = general!["localization"] as? NSMutableDictionary ?? [:]
+        let properties = general!["properties"] as? NSMutableDictionary
         return properties
     }
     
@@ -58,8 +59,8 @@ struct WebWallpaperView: NSViewRepresentable {
         var jsCode = ""
         let filePath: String = wallpaperViewModel.currentWallpaper.wallpaperDirectory.path() + "project.json"
         let rootJSON = readTextAndConvertToJSON(filePath: filePath)
-        if let rootDict = rootJSON as?  NSMutableDictionary {
-            if let propertiesDict = extractPropertiesDict(from: rootDict, tree: "properties") {
+        if let rootDict = rootJSON as? NSMutableDictionary {
+            if let propertiesDict = extractPropertiesDict(from: rootDict) {
                 AppDelegate.shared.webProperties = propertiesDict
                 if let propertiesString = convertDictToJSONString(dict: propertiesDict) {
                     jsCode = "window.properties = \(propertiesString)"
@@ -97,7 +98,7 @@ struct WebWallpaperView: NSViewRepresentable {
         let filePath: String = selectedWallpaper.wallpaperDirectory.path() + "project.json"
         let rootJSON = readTextAndConvertToJSON(filePath: filePath)
         if let rootDict = rootJSON as?  NSMutableDictionary {
-            if let propertiesDict = extractPropertiesDict(from: rootDict, tree: "properties") {
+            if let propertiesDict = extractPropertiesDict(from: rootDict) {
                 AppDelegate.shared.webProperties = propertiesDict
                 if let propertiesString = convertDictToJSONString(dict: propertiesDict) {
                     jsCode = "window.properties = \(propertiesString);wallpaperPropertyListener.applyUserProperties(properties)"

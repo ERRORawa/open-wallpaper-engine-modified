@@ -14,6 +14,7 @@ struct WallpaperDiscover: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.top, 50)
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }
 

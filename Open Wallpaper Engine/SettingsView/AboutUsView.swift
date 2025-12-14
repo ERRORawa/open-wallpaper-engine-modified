@@ -19,7 +19,13 @@ extension AppDelegate {
     }
 }
 
+func log(any: Any) -> Bool {
+    print(any)
+    return false
+}
+
 struct AboutUsView: View {
+    
     var body: some View {
         VStack(spacing: 50) {
             HStack {
@@ -44,6 +50,7 @@ struct AboutUsView: View {
             }
         }
         .frame(width: 400, height: 300)
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }
 

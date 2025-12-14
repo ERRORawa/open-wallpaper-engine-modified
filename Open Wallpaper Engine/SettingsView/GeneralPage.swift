@@ -26,10 +26,10 @@ struct GeneralPage: SettingsPage {
             // MARK: Basic Setup
             Section {
                 Picker("Language", selection: $viewModel.settings.language) {
-                    Text("Follow System").tag(GSLocalization.followSystem)
-                    Text("English").tag(GSLocalization.en_US)
-                    Text("Chinese Simplified").tag(GSLocalization.zh_CN)
-                }.disabled(true)
+                    Text("Follow System").tag("system")
+                    Text(" English").tag("en-US")
+                    Text("简体中文").tag("zh-Hans")
+                }
                 Toggle("And change system wallpaper", isOn: $viewModel.settings.changeWallpaper)
                 Picker("Recent wallpaper list count", selection: $viewModel.settings.recentWallpaperCount) {
                     Text("5").tag("5")
@@ -113,6 +113,8 @@ struct GeneralPage: SettingsPage {
             } header: {
                 Label("Reset", systemImage: "exclamationmark.triangle.fill")
             }
-        }.formStyle(.grouped)
+        }
+        .formStyle(.grouped)
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

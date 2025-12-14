@@ -58,6 +58,8 @@ struct PluginsPage: SettingsPage {
             } header: {
                 Label("Other", systemImage: "wrench.and.screwdriver.fill")
             }
-        }.formStyle(.grouped)
+        }
+        .formStyle(.grouped)
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

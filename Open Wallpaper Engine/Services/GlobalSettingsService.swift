@@ -39,11 +39,6 @@ enum GSAppearance: String, CaseIterable, Identifiable, Codable {
     case light, dark, followSystem
 }
 
-enum GSLocalization: String, CaseIterable, Identifiable, Codable {
-    var id: Self { self }
-    case en_US, zh_CN, followSystem
-}
-
 enum GSVideoFramework: String, CaseIterable, Identifiable, Codable {
     var id: Self { self }
     case avkit
@@ -80,7 +75,7 @@ struct GlobalSettings: Codable, Equatable {
     var safeMode = false
     
     // MARK: Basic Setup
-    var language = GSLocalization.followSystem
+    var language = "system"
     var changeWallpaper = false
     var recentWallpaperCount = "5"
     
@@ -230,6 +225,7 @@ class GlobalSettingsViewModel: ObservableObject {
         let data = try! JSONEncoder().encode(settings)
         print(String(describing: String(data: data, encoding: .utf8)))
         UserDefaults.standard.set(data, forKey: "GlobalSettings")
+        AppDelegate.shared.languageState.setLanguage(code: settings.language)
     }
     
     func setQuality(_ quality: GSQuality) {

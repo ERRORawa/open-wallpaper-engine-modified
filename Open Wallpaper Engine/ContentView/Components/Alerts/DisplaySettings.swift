@@ -97,5 +97,6 @@ struct DisplaySettings: SubviewOfContentView {
         .overlay {
             WorkingInProgress()
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

@@ -87,5 +87,6 @@ struct ExplorerItemMenu: SubviewOfContentView {
             }
         }
         .labelStyle(.titleAndIcon)
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

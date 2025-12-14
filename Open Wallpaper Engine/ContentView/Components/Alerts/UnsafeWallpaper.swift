@@ -94,5 +94,6 @@ struct UnsafeWallpaper: View {
                 }
             }
         }
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }

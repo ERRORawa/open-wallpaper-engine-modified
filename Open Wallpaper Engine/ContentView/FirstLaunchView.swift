@@ -59,6 +59,7 @@ struct FirstLaunchView: View {
         .textSelection(.enabled)
         .padding()
         .frame(width: 600)
+        .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
     }
 }
 
@@ -87,6 +88,7 @@ extension FirstLaunchView {
                 .multilineTextAlignment(.leading)
                 Spacer()
             }
+            .environment(\.locale, Locale(identifier: AppDelegate.shared.languageState.localeIdentifier))
         }
     }
 }
