@@ -74,6 +74,7 @@ struct WebWallpaperView: NSViewRepresentable {
         let userContentController = WKUserContentController()
         userContentController.addUserScript(userScript)
         let webConfig = WKWebViewConfiguration()
+        webConfig.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
         webConfig.userContentController = userContentController
         
         AppDelegate.shared.nsView = WKWebView(frame: .zero, configuration: webConfig)
@@ -81,6 +82,10 @@ struct WebWallpaperView: NSViewRepresentable {
         AppDelegate.shared.nsView.navigationDelegate = viewModel
         
         AppDelegate.shared.nsView.loadFileURL(viewModel.fileUrl, allowingReadAccessTo: viewModel.readAccessURL)
+        
+        if AppDelegate.shared.viewModel.settings.switchAfterFinish {
+            AppDelegate.shared.startListening()
+        }
         return AppDelegate.shared.nsView
     }
     
@@ -88,9 +93,25 @@ struct WebWallpaperView: NSViewRepresentable {
         let selectedWallpaper = wallpaperViewModel.currentWallpaper
         let currentWallpaper = viewModel.currentWallpaper
         
+        var jsCode = ""
+        let filePath: String = selectedWallpaper.wallpaperDirectory.path() + "project.json"
+        let rootJSON = readTextAndConvertToJSON(filePath: filePath)
+        if let rootDict = rootJSON as?  NSMutableDictionary {
+            if let propertiesDict = extractPropertiesDict(from: rootDict, tree: "properties") {
+                AppDelegate.shared.webProperties = propertiesDict
+                if let propertiesString = convertDictToJSONString(dict: propertiesDict) {
+                    jsCode = "window.properties = \(propertiesString);wallpaperPropertyListener.applyUserProperties(properties)"
+                }
+            }
+        }
+        nsView.evaluateJavaScript(jsCode, completionHandler: nil)
+        
         if selectedWallpaper.wallpaperDirectory.appending(path: selectedWallpaper.project.file) != currentWallpaper.wallpaperDirectory.appending(path: currentWallpaper.project.file) {
             viewModel.currentWallpaper = selectedWallpaper
             nsView.loadFileURL(viewModel.fileUrl, allowingReadAccessTo: viewModel.readAccessURL)
+        }
+        if AppDelegate.shared.viewModel.settings.switchAfterFinish {
+            AppDelegate.shared.startListening()
         }
     }
 }

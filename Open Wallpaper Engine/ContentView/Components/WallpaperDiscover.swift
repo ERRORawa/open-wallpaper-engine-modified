@@ -20,6 +20,6 @@ struct WallpaperDiscover: View {
 struct WallpaperDiscover_Previews: PreviewProvider {
     static var previews: some View {
         ContentView(viewModel: .init(isStaging: true, topTabBarSelection: 1), wallpaperViewModel: .init())
-            .environmentObject(GlobalSettingsViewModel())
+            .environmentObject(AppDelegate.shared.viewModel)
     }
 }

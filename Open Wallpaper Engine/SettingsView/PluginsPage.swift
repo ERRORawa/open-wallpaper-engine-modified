@@ -53,7 +53,6 @@ struct PluginsPage: SettingsPage {
             // MARK: Other
             Section {
                 Toggle("Switch after video finish", isOn: $viewModel.settings.switchAfterFinish)
-                    .disabled(true)
                 Toggle("Always start at first wallpaper", isOn: $viewModel.settings.alwaysFirst)
                     .disabled(true)
             } header: {

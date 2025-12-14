@@ -16,19 +16,19 @@ protocol SettingsPage: View {
 
 extension AppDelegate {
     @objc func jumpToPerformance() {
-        self.globalSettingsViewModel.selection = 0
+        self.viewModel.selection = 0
     }
     
     @objc func jumpToGeneral() {
-        self.globalSettingsViewModel.selection = 1
+        self.viewModel.selection = 1
     }
     
     @objc func jumpToPlugins() {
-        self.globalSettingsViewModel.selection = 2
+        self.viewModel.selection = 2
     }
     
     @objc func jumpToAbout() {
-        self.globalSettingsViewModel.selection = 3
+        self.viewModel.selection = 3
     }
 }
 
@@ -136,7 +136,7 @@ struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         SettingsView()
             .environmentObject({ () -> GlobalSettingsViewModel in 
-                let viewModel = GlobalSettingsViewModel()
+                let viewModel = AppDelegate.shared.viewModel
                 viewModel.selection = 2
                 return viewModel
             }())
