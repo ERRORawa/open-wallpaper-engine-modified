@@ -1546,7 +1546,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "回放速率"
+            "value" : "播放速度"
           }
         }
       }
@@ -2034,6 +2034,9 @@
           }
         }
       }
+    },
+    "Simplified Chinese (简体中文)" : {
+
     },
     "Small Icons" : {
       "localizations" : {
@@ -2535,9 +2538,6 @@
           }
         }
       }
-    },
-    "简体中文" : {
-      "shouldTranslate" : false
     }
   },
   "version" : "1.0"

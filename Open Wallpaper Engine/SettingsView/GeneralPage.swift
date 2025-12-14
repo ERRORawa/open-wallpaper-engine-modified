@@ -28,7 +28,7 @@ struct GeneralPage: SettingsPage {
                 Picker("Language", selection: $viewModel.settings.language) {
                     Text("Follow System").tag("system")
                     Text(" English").tag("en-US")
-                    Text("简体中文").tag("zh-Hans")
+                    Text("Simplified Chinese (简体中文)").tag("zh-Hans")
                 }
                 Toggle("And change system wallpaper", isOn: $viewModel.settings.changeWallpaper)
                 Picker("Recent wallpaper list count", selection: $viewModel.settings.recentWallpaperCount) {
