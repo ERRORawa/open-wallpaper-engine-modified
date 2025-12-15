@@ -63,7 +63,7 @@ struct WebWallpaperView: NSViewRepresentable {
             if let propertiesDict = extractPropertiesDict(from: rootDict) {
                 AppDelegate.shared.webProperties = propertiesDict
                 if let propertiesString = convertDictToJSONString(dict: propertiesDict) {
-                    jsCode = "window.properties = \(propertiesString)"
+                    jsCode = "function wallpaperRegisterAudioListener(Func){};window.properties = \(propertiesString)"
                 }
             }
         }
@@ -101,7 +101,7 @@ struct WebWallpaperView: NSViewRepresentable {
             if let propertiesDict = extractPropertiesDict(from: rootDict) {
                 AppDelegate.shared.webProperties = propertiesDict
                 if let propertiesString = convertDictToJSONString(dict: propertiesDict) {
-                    jsCode = "window.properties = \(propertiesString);wallpaperPropertyListener.applyUserProperties(properties)"
+                    jsCode = "function wallpaperRegisterAudioListener(Func){};window.properties = \(propertiesString);wallpaperPropertyListener.applyUserProperties(properties)"
                 }
             }
         }

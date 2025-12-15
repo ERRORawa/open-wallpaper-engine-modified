@@ -345,7 +345,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                         let max = dict["max"] as! Double
                                         let value = dict["value"] as! Int
                                         HStack {
-                                            Label(label, systemImage: "")
+                                            Text(label)
                                             Spacer()
                                             Slider(
                                                 value: sliderBinding(for: key),
@@ -370,7 +370,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                         if stringOptions != nil {
                                             let value = dict["value"] as? String ?? ""
                                             HStack {
-                                                Label(label, systemImage: "")
+                                                Text(label)
                                                 Spacer()
                                                 Picker("", selection: stringComboBinding(for: key)) {
                                                     ForEach(stringOptions!, id: \.["value"]) { option in
@@ -395,7 +395,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                             }
                                             let value = dict["value"] as? Int ?? 0
                                             HStack {
-                                                Label(label, systemImage: "")
+                                                Text(label)
                                                 Spacer()
                                                 Picker("", selection: intComboBinding(for: key)) {
                                                     ForEach(parsedOptions, id: \.value) { option in
@@ -410,7 +410,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                     case "bool":
                                         let value = dict["value"] as? Bool ?? false
                                         HStack {
-                                            Label(label, systemImage: "")
+                                            Text(label)
                                             Spacer()
                                             Toggle("", isOn: toggleBinding(for: key))
                                         }
@@ -420,7 +420,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                     case "file":
                                         let value = ""
                                         HStack {
-                                            Label(label, systemImage: "")
+                                            Text(label)
                                             Spacer()
                                             VStack {
                                                 if fileValues[key]?.lastPathComponent ?? "" == ""{

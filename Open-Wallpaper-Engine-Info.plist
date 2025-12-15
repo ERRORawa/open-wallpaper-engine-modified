@@ -7,5 +7,19 @@
 		<key>NSExceptionDomains</key>
 		<dict/>
 	</dict>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>测试功能</string>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string></string>
+			<key>UTTypeIcons</key>
+			<dict/>
+			<key>UTTypeTagSpecification</key>
+			<dict/>
+		</dict>
+		<dict/>
+	</array>
 </dict>
 </plist>

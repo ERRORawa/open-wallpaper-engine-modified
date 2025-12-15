@@ -31,7 +31,7 @@ class WebWallpaperViewModel: NSObject, ObservableObject, WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        let javascriptStyle = "wallpaperPropertyListener.applyUserProperties(properties)"
+        let javascriptStyle = "function wallpaperRegisterAudioListener(Func){};wallpaperPropertyListener.applyUserProperties(properties)"
         webView.evaluateJavaScript(javascriptStyle, completionHandler: nil)
         
         if AppDelegate.shared.viewModel.settings.adjustMenuBarTint {
