@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 struct WallpaperPreview: SubviewOfContentView {
     @ObservedObject var viewModel: ContentViewModel
