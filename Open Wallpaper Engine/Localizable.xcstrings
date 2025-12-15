@@ -1643,6 +1643,16 @@
         }
       }
     },
+    "Press Enter to Save" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下回车键保存更改"
+          }
+        }
+      }
+    },
     "Proceed" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2036,7 +2046,7 @@
       }
     },
     "Simplified Chinese (简体中文)" : {
-
+      "shouldTranslate" : false
     },
     "Small Icons" : {
       "localizations" : {

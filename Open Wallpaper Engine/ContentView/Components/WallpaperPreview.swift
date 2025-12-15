@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct WallpaperPreview: SubviewOfContentView {
     @ObservedObject var viewModel: ContentViewModel
@@ -14,10 +15,16 @@ struct WallpaperPreview: SubviewOfContentView {
     @Environment(\.undoManager) var undoManager
     
     @State var dictKeys: [String] = []
+    
     @State var sliderValues: [String: Int] = [:]
+    
     @State var stringComboValues: [String: String] = [:]
     @State var intComboValues: [String: Int] = [:]
+    
     @State var toggleValues: [String: Bool] = [:]
+    
+    @State var textValues: [String: String] = [:]
+    
     @State var fileValues: [String: URL] = [:]
     @State var showFilePicker = false
     @State var isCancle = false
@@ -58,6 +65,13 @@ struct WallpaperPreview: SubviewOfContentView {
                 toggleValues[key] = newValue
                 updateProperties(key: key, value: toggleValues[key]!)
             }
+        )
+    }
+    
+    func textBinding(for key: String) -> Binding<String> {
+        Binding<String>(
+            get: { textValues[key] ?? ""},
+            set: { newValue in textValues[key] = newValue }
         )
     }
     
@@ -137,6 +151,41 @@ struct WallpaperPreview: SubviewOfContentView {
     func log(any: Any) -> Bool {
         print(any)
         return false
+    }
+    
+    func multiText(texts: [String]) -> some View {
+        VStack(alignment: .leading){
+            ForEach(0...texts.count - 1, id: \.self) { i in
+                if i == 0 {
+                    Text(texts[i])
+                } else {
+                    Text(texts[i])
+                        .font(.footnote)
+                }
+            }
+        }
+    }
+    
+    func cover(text: String) -> [String] {
+        let htmlCodes = ["<\\s*br\\s*\\/?>", "<\\/?\\s*small\\s*>"]
+        let markdownCodes = ["\n", "`"]
+        do {
+            var result = text
+            for index in 0...htmlCodes.count - 1 {
+                let regex = try NSRegularExpression(pattern: htmlCodes[index], options: [.caseInsensitive])
+                let range = NSRange(location: 0, length: result.utf16.count)
+                result = regex.stringByReplacingMatches(
+                    in: result,
+                    options: [],
+                    range: range,
+                    withTemplate: markdownCodes[index]
+                )
+            }
+            return result.components(separatedBy: "`")
+        } catch {
+            print("正则表达式错误: \(error)")
+            return text.components(separatedBy: "`")
+        }
     }
     
     @State var isEditingId = ""
@@ -337,7 +386,8 @@ struct WallpaperPreview: SubviewOfContentView {
                             VStack {
                                 ForEach(dictKeys, id: \.self) { key in
                                     let dict = AppDelegate.shared.webProperties[key] as!  NSMutableDictionary
-                                    let label = dict["text"] as! String
+                                    let htmlLabel = dict["text"] as! String
+                                    let label = cover(text: htmlLabel)
                                     let type = dict["type"] as? String ?? "No Type"
                                     switch type {
                                     case "slider":
@@ -345,7 +395,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                         let max = dict["max"] as! Double
                                         let value = dict["value"] as! Int
                                         HStack {
-                                            Text(label)
+                                            multiText(texts: label)
                                             Spacer()
                                             Slider(
                                                 value: sliderBinding(for: key),
@@ -370,7 +420,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                         if stringOptions != nil {
                                             let value = dict["value"] as? String ?? ""
                                             HStack {
-                                                Text(label)
+                                                multiText(texts: label)
                                                 Spacer()
                                                 Picker("", selection: stringComboBinding(for: key)) {
                                                     ForEach(stringOptions!, id: \.["value"]) { option in
@@ -395,7 +445,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                             }
                                             let value = dict["value"] as? Int ?? 0
                                             HStack {
-                                                Text(label)
+                                                multiText(texts: label)
                                                 Spacer()
                                                 Picker("", selection: intComboBinding(for: key)) {
                                                     ForEach(parsedOptions, id: \.value) { option in
@@ -410,45 +460,54 @@ struct WallpaperPreview: SubviewOfContentView {
                                     case "bool":
                                         let value = dict["value"] as? Bool ?? false
                                         HStack {
-                                            Text(label)
+                                            multiText(texts: label)
                                             Spacer()
                                             Toggle("", isOn: toggleBinding(for: key))
                                         }
                                         .onAppear {
                                             toggleValues[key] = value
                                         }
+                                    case "textinput":
+                                        let value = dict["value"] as? String ?? ""
+                                        HStack {
+                                            multiText(texts: label)
+                                            Spacer()
+                                            TextField("Press Enter to Save", text: textBinding(for: key), onCommit: {
+                                                updateProperties(key: key, value: textValues[key]!)
+                                            })
+                                                .frame(width: 150)
+                                                .textFieldStyle(.roundedBorder)
+                                                .border(Color(.blue))
+                                        }
+                                        .onAppear {
+                                            textValues[key] = value
+                                        }
                                     case "file":
                                         let value = ""
                                         HStack {
-                                            Text(label)
+                                            multiText(texts: label)
                                             Spacer()
                                             VStack {
                                                 if fileValues[key]?.lastPathComponent ?? "" == ""{
-                                                    HStack {
-                                                        Text("Nothing Imported")
-                                                            .scaleEffect(0.8, anchor: .bottom)
-                                                    }
-                                                    .offset(y: 5)
-                                                    HStack {
-                                                        Button() {
-                                                            fileKey = key
-                                                            showFilePicker = true
-                                                            ImageFilePicker(fileValues: $fileValues, isPresented: $showFilePicker, isCancle: $isCancle, key: fileKey).showPanel()
-                                                            updateProperties(key: key, value: fileValues[key] ?? "")
-                                                        } label: {
-                                                            Image(systemName: "pencil.line")
-                                                                .foregroundColor(Color(NSColor.systemBlue))
-                                                                .frame(height: 16)
-                                                            Text("Select file")
-                                                        }
+                                                    Text("Nothing Imported")
+                                                        .scaleEffect(0.8, anchor: .bottom)
+                                                        .offset(y: 5)
+                                                    Button() {
+                                                        fileKey = key
+                                                        showFilePicker = true
+                                                        ImageFilePicker(fileValues: $fileValues, isPresented: $showFilePicker, isCancle: $isCancle, key: fileKey).showPanel()
+                                                        updateProperties(key: key, value: fileValues[key] ?? "")
+                                                    } label: {
+                                                        Image(systemName: "pencil.line")
+                                                            .foregroundColor(Color(NSColor.systemBlue))
+                                                            .frame(height: 16)
+                                                        Text("Select file")
                                                     }
                                                 }
                                                 else {
-                                                    HStack {
-                                                        Text(fileValues[key]?.lastPathComponent ?? "ERROR")
-                                                            .scaleEffect(0.8, anchor: .bottom)
-                                                    }
-                                                    .offset(y: 5)
+                                                    Text(fileValues[key]?.lastPathComponent ?? "ERROR")
+                                                        .scaleEffect(0.8, anchor: .bottom)
+                                                        .offset(y: 5)
                                                     HStack {
                                                         Button() {
                                                             fileKey = key
@@ -490,7 +549,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                             fileValues[key] = URL(string: value)
                                         }
                                     default:
-                                        Text("\(label): \(key) NotSupport")
+                                        Text("\(key): \(type) NotSupport")
                                     }
                                 }
                             }
