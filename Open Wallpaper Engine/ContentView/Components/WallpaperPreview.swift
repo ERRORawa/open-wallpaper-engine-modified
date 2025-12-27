@@ -15,6 +15,9 @@ struct WallpaperPreview: SubviewOfContentView {
     
     @State var dictKeys: [String] = []
     
+    @State var colorValues: [String: Color] = [:]
+    @State var colorTimer: Timer? = nil
+    
     @State var sliderValues: [String: Int] = [:]
     
     @State var stringComboValues: [String: String] = [:]
@@ -29,6 +32,15 @@ struct WallpaperPreview: SubviewOfContentView {
     @State var isCancle = false
     @State var fileKey = ""
     @State var lastFile = "noFile.noFile"
+    
+    func colorBinding(for key: String) -> Binding<Color> {
+        Binding<Color>(
+            get: { colorValues[key] ?? Color.white },
+            set: { newValue in
+                colorValues[key] = newValue
+            }
+        )
+    }
     
     func sliderBinding(for key: String) -> Binding<Double> {
         Binding<Double>(
@@ -72,6 +84,14 @@ struct WallpaperPreview: SubviewOfContentView {
             get: { textValues[key] ?? ""},
             set: { newValue in textValues[key] = newValue }
         )
+    }
+    
+    func updateColor(key: String, color: Color) {
+        let r = String(((color.components.red * 255).rounded() / 255))
+        let g = String(((color.components.green * 255).rounded() / 255))
+        let b = String(((color.components.blue * 255).rounded() / 255))
+        let rgb = "\(r) \(g) \(b)"
+        updateProperties(key: key, value: rgb)
     }
     
     func convertDictToJSONString(dict:  NSMutableDictionary, prettyPrinted: Bool = false) -> String? {
@@ -142,7 +162,6 @@ struct WallpaperPreview: SubviewOfContentView {
         var javascriptStyle = ""
         if let propertiesString = convertDictToJSONString(dict: newJS) {
             javascriptStyle = "window.properties = \(propertiesString);wallpaperPropertyListener.applyUserProperties(properties)"
-            print(javascriptStyle)
         }
         AppDelegate.shared.nsView.evaluateJavaScript(javascriptStyle, completionHandler: nil)
     }
@@ -155,19 +174,80 @@ struct WallpaperPreview: SubviewOfContentView {
     func multiText(texts: [String]) -> some View {
         VStack(alignment: .leading){
             ForEach(0...texts.count - 1, id: \.self) { i in
-                if i == 0 {
-                    Text(texts[i])
+                if (i%2) == 0 {
+                    if texts[i] != " " {
+                        Text(texts[i])
+                    }
                 } else {
-                    Text(texts[i])
-                        .font(.footnote)
+                    let kind = texts[i].components(separatedBy: "´")
+                    if kind[0] == "small" {
+                        Text(kind[1])
+                            .font(.footnote)
+                    } else if kind[0] == "h4" {
+                        Text(kind[1])
+                            .font(.title2)
+                    } else if kind[0] == "img" {
+                        let img = imgComponents(text: kind[1])
+                        let style = styleData(info: img)
+                        if style.widKind == "px" {
+                            AsyncImage(url: URL(string: style.url)) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(width: style.width)
+                        } else {
+                            AsyncImage(url: URL(string: style.url)) { image in
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(width: 295 * style.width)
+                        }
+                    }
                 }
             }
         }
     }
     
-    func cover(text: String) -> [String] {
-        let htmlCodes = ["<\\s*br\\s*\\/?>", "<\\/?\\s*small\\s*>"]
-        let markdownCodes = ["\n", "`"]
+    func styleData(info: [String]) -> (url: String, width: Double, widKind: String) {
+        var url = ""
+        var width: Double = 100
+        var widKind = "pre"
+        for item in info {
+            if item.hasPrefix("src") {
+                url = item.components(separatedBy: "=")[1]
+            } else if item.hasPrefix("width") {
+                var widthText = item.components(separatedBy: "=")[1].lowercased()
+                if widthText.hasSuffix("%") {
+                    widthText = widthText.replacing("%", with: "")
+                    width = (Double(widthText) ?? 1) / 100
+                    if width > 1 {
+                        width = 1
+                    } else if width < 0 {
+                        width = 0
+                    }
+                } else if widthText.hasSuffix("px") {
+                    width = Double(widthText.replacing("px", with: "")) ?? 100
+                    widKind = "px"
+                    if width > 295 {
+                        width = 295
+                    } else if width < 0 {
+                        width = 0
+                    }
+                }
+            }
+        }
+        return (url, width, widKind)
+    }
+    
+    func imgComponents(text: String) -> [String] {
+        let htmlCodes = ["\\s*=\\s*", "='", "'\\s*"]
+        let markdownCodes = ["=", "=", " "]
         do {
             var result = text
             for index in 0...htmlCodes.count - 1 {
@@ -180,10 +260,36 @@ struct WallpaperPreview: SubviewOfContentView {
                     withTemplate: markdownCodes[index]
                 )
             }
+            return result.components(separatedBy: " ")
+        } catch {
+            print("正则表达式错误: \(error)")
+            return text.components(separatedBy: " ")
+        }
+    }
+    
+    func cover(text: String) -> [String] {
+        let htmlCodes = ["<\\s*br\\s*\\/?>", "<\\s*small\\s*>", "<\\s*\\/\\s*small\\s*>", "<\\s*h4\\s*>", "<\\s*\\/\\s*h4\\s*>", "<\\s*img\\s*", "\\s*\\/\\s*>"]
+        let markdownCodes = ["\n", "`small´", "`", "`h4´", "`", "`img´","`"]
+        do {
+            var result = text
+            for index in 0...htmlCodes.count - 1 {
+                let regex = try NSRegularExpression(pattern: htmlCodes[index], options: [.caseInsensitive])
+                let range = NSRange(location: 0, length: result.utf16.count)
+                result = regex.stringByReplacingMatches(
+                    in: result,
+                    options: [],
+                    range: range,
+                    withTemplate: markdownCodes[index]
+                )
+            }
+            result = result.replacing("``", with: "` `")
+            result = result.replacing("\n`", with: "`")
+            result = result.replacing("`\n", with: "`")
             return result.components(separatedBy: "`")
         } catch {
             print("正则表达式错误: \(error)")
-            return text.components(separatedBy: "`")
+            let texts = text.replacing("``", with: "` `")
+            return texts.components(separatedBy: "`")
         }
     }
     
@@ -389,6 +495,27 @@ struct WallpaperPreview: SubviewOfContentView {
                                     let label = cover(text: htmlLabel)
                                     let type = dict["type"] as? String ?? "No Type"
                                     switch type {
+                                    case "text":
+                                        HStack {
+                                            multiText(texts: label)
+                                            Spacer()
+                                        }
+                                    case "color":
+                                        let value = (dict["value"] as? String ?? "0 0 0").split(separator: " ").compactMap{ Double($0) }
+                                        HStack {
+                                            multiText(texts: label)
+                                            Spacer()
+                                            ColorPicker("", selection: colorBinding(for: key), supportsOpacity: false)
+                                                .onChange(of: colorValues[key] ?? Color.white) { newValue in
+                                                    colorTimer?.invalidate()
+                                                    colorTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                                                        updateColor(key: key, color: newValue)
+                                                    }
+                                                }
+                                        }
+                                        .onAppear {
+                                            colorValues[key] = Color(red: value[0], green: value[1], blue: value[2], opacity: 1)
+                                        }
                                     case "slider":
                                         let min = dict["min"] as! Double
                                         let max = dict["max"] as! Double
@@ -549,6 +676,9 @@ struct WallpaperPreview: SubviewOfContentView {
                                         }
                                     default:
                                         Text("\(key): \(type) NotSupport")
+                                        if log(any: "\(key): \(type) NotSupport") {
+                                            
+                                        }
                                     }
                                 }
                             }
@@ -699,8 +829,25 @@ struct WallpaperPreview: SubviewOfContentView {
     }
 }
 
+extension Color {
+    // 定义一个返回组件的元组
+    var components: (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
+        let nsColor = NSColor(self)
+        guard let rgbColor = nsColor.usingColorSpace(.sRGB) else {
+            return (0, 0, 0, 1)
+        }
+        
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        rgbColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+        
+        return (r, g, b, a)
+    }
+}
+
 extension URL {
-    /// check if the URL is a directory and if it is reachable
     func isDirectoryAndReachable() throws -> Bool {
         guard try resourceValues(forKeys: [.isDirectoryKey]).isDirectory == true else {
             return false
@@ -708,7 +855,6 @@ extension URL {
         return try checkResourceIsReachable()
     }
 
-    /// returns total allocated size of a the directory including its subFolders or not
     func directoryTotalAllocatedSize(includingSubfolders: Bool = false) throws -> Int? {
         guard try isDirectoryAndReachable() else { return nil }
         if includingSubfolders {
