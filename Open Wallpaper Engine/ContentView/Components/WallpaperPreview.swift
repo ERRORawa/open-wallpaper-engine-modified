@@ -31,7 +31,8 @@ struct WallpaperPreview: SubviewOfContentView {
     @State var showFilePicker = false
     @State var isCancle = false
     @State var fileKey = ""
-    @State var lastFile = "noFile.noFile"
+    @State var realFile: [String: String] = [:]
+    @State var isDir: ObjCBool = false
     
     func colorBinding(for key: String) -> Binding<Color> {
         Binding<Color>(
@@ -122,11 +123,22 @@ struct WallpaperPreview: SubviewOfContentView {
                 return
             }
             let fileURL = value as! URL
+            let wallpaperDir = wallpaperViewModel.currentWallpaper.wallpaperDirectory.appendingPathComponent("owem")
+            if !FileManager.default.fileExists(atPath: wallpaperDir.path(), isDirectory: &isDir) {
+                if !isDir.boolValue {
+                    do {
+                        try FileManager.default.createDirectory(atPath: wallpaperDir.path(), withIntermediateDirectories: true)
+                    } catch {
+                        print("无法创建自定义属性文件夹：\(wallpaperDir.path())")
+                        return
+                    }
+                }
+            }
             if fileURL.lastPathComponent == "remove" {
                 newDict.removeObject(forKey: "value")
                 fileValues.removeValue(forKey: key)
-                let wallpaperDir = wallpaperViewModel.currentWallpaper.wallpaperDirectory
-                let lastURL = wallpaperDir.appendingPathComponent(lastFile)
+                
+                let lastURL = wallpaperDir.appendingPathComponent(realFile[key]!)
                 do {
                     if FileManager.default.fileExists(atPath: lastURL.path()) {
                         try FileManager.default.removeItem(at: lastURL)
@@ -134,15 +146,14 @@ struct WallpaperPreview: SubviewOfContentView {
                 } catch {
                     print("删除文件失败：\(error.localizedDescription)")
                 }
-                lastFile = "noFile.noFile"
+                realFile[key] = "noFile.noFile"
             } else {
-                let wallpaperDir = wallpaperViewModel.currentWallpaper.wallpaperDirectory
-                var fileName = fileURL.lastPathComponent
-                if fileName == lastFile {
-                    fileName = "1" + lastFile
+                var fileName = "\(key)_\(fileURL.lastPathComponent)"
+                if fileName == realFile[key] {
+                    fileName = "\(key)_1\(fileURL.lastPathComponent)"
                 }
                 let destURL = wallpaperDir.appendingPathComponent(fileName)
-                let lastURL = wallpaperDir.appendingPathComponent(lastFile)
+                let lastURL = wallpaperDir.appendingPathComponent(realFile[key]!)
                 do {
                     if FileManager.default.fileExists(atPath: lastURL.path()) {
                         try FileManager.default.removeItem(at: lastURL)
@@ -154,7 +165,7 @@ struct WallpaperPreview: SubviewOfContentView {
                 } catch {
                     print("复制文件失败：\(error.localizedDescription)")
                 }
-                lastFile = fileName
+                realFile[key] = fileName
                 newDict["value"] = destURL.path()
             }
             newJS[key] = newDict
@@ -193,7 +204,7 @@ struct WallpaperPreview: SubviewOfContentView {
                             AsyncImage(url: URL(string: style.url)) { image in
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fit)
+                                    .scaledToFit()
                             } placeholder: {
                                 ProgressView()
                             }
@@ -206,7 +217,7 @@ struct WallpaperPreview: SubviewOfContentView {
                             } placeholder: {
                                 ProgressView()
                             }
-                            .frame(width: 295 * style.width)
+                            .frame(width: 280 * style.width)
                         }
                     }
                 }
@@ -234,8 +245,8 @@ struct WallpaperPreview: SubviewOfContentView {
                 } else if widthText.hasSuffix("px") {
                     width = Double(widthText.replacing("px", with: "")) ?? 100
                     widKind = "px"
-                    if width > 295 {
-                        width = 295
+                    if width > 280 {
+                        width = 280
                     } else if width < 0 {
                         width = 0
                     }
@@ -648,8 +659,8 @@ struct WallpaperPreview: SubviewOfContentView {
                                                         
                                                         Button() {
                                                             let workspace = NSWorkspace.shared
-                                                            let wallpaperDirectory = wallpaperViewModel.currentWallpaper.wallpaperDirectory
-                                                            workspace.activateFileViewerSelecting([wallpaperDirectory.appendingPathComponent(lastFile)])
+                                                            let wallpaperDirectory = wallpaperViewModel.currentWallpaper.wallpaperDirectory.appendingPathComponent("owem")
+                                                            workspace.activateFileViewerSelecting([wallpaperDirectory.appendingPathComponent(realFile[key]!)])
                                                         } label: {
                                                             Image(systemName: "folder.fill")
                                                                 .foregroundColor(Color(NSColor.systemBlue))
@@ -673,6 +684,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                         }
                                         .onAppear {
                                             fileValues[key] = URL(string: value)
+                                            realFile[key] = "noFile.noFile"
                                         }
                                     default:
                                         Text("\(key): \(type) NotSupport")
