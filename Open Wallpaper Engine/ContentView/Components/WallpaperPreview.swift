@@ -46,7 +46,10 @@ struct WallpaperPreview: SubviewOfContentView {
     func sliderBinding(for key: String) -> Binding<Double> {
         Binding<Double>(
             get: { Double(sliderValues[key] ?? 0) },
-            set: { newValue in sliderValues[key] = Int(newValue) }
+            set: { newValue in
+                sliderValues[key] = Int(newValue)
+                updateProperties(key: key, value: sliderValues[key]!)
+            }
         )
     }
     
@@ -114,8 +117,6 @@ struct WallpaperPreview: SubviewOfContentView {
     func updateProperties(key: String, value: Any) {
         let newDict = AppDelegate.shared.webProperties[key] as! NSMutableDictionary
         newDict["value"] = value
-        AppDelegate.shared.webProperties[key] = newDict
-        let newJS = AppDelegate.shared.webProperties
         if newDict["type"] as! String == "file" {
             if isCancle {
                 isCancle = false
@@ -168,11 +169,13 @@ struct WallpaperPreview: SubviewOfContentView {
                 realFile[key] = fileName
                 newDict["value"] = destURL.path()
             }
-            newJS[key] = newDict
         }
+        AppDelegate.shared.webProperties[key] = newDict
+        let newJS: NSMutableDictionary = [:]
+        newJS[key] = newDict
         var javascriptStyle = ""
-        if let propertiesString = convertDictToJSONString(dict: newJS) {
-            javascriptStyle = "window.properties = \(propertiesString);wallpaperPropertyListener.applyUserProperties(properties)"
+        if let updateString = convertDictToJSONString(dict: newJS) {
+            javascriptStyle = "window.properties.\(key) = \(updateString).\(key); window.updateProperties = \(updateString); wallpaperPropertyListener.applyUserProperties(updateProperties)"
         }
         AppDelegate.shared.nsView.evaluateJavaScript(javascriptStyle, completionHandler: nil)
     }
@@ -534,15 +537,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                         HStack {
                                             multiText(texts: label)
                                             Spacer()
-                                            Slider(
-                                                value: sliderBinding(for: key),
-                                                in: min...max,
-                                                onEditingChanged: { isEditing in
-                                                    if !isEditing {
-                                                        updateProperties(key: key, value: sliderValues[key]!)
-                                                    }
-                                                }
-                                            )
+                                            Slider(value: sliderBinding(for: key), in: min...max)
                                                 .frame(width: 80)
                                             Text("\(sliderValues[key] ?? 0)")
                                                 .frame(width: 30)
