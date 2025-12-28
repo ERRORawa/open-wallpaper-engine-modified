@@ -54,6 +54,7 @@
 		740A9F872EEEC1E200D7E7BB /* LanguageState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740A9F862EEEC1E200D7E7BB /* LanguageState.swift */; };
 		740D84682EED41C600BEEC26 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740D84672EED41C600BEEC26 /* FilePicker.swift */; };
 		740D846A2EEEBB7E00BEEC26 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 740D84692EEEBB7E00BEEC26 /* Localizable.xcstrings */; };
+		747544622FA6880C00E1ECFE /* Audio.app in Resources */ = {isa = PBXBuildFile; fileRef = 747544612FA6880C00E1ECFE /* Audio.app */; };
 		DAEE29C62A9CB52100633898 /* WebWallpaperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEE29C52A9CB52100633898 /* WebWallpaperViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -133,6 +134,7 @@
 		740A9F862EEEC1E200D7E7BB /* LanguageState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageState.swift; sourceTree = "<group>"; };
 		740D84672EED41C600BEEC26 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		740D84692EEEBB7E00BEEC26 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		747544612FA6880C00E1ECFE /* Audio.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = Audio.app; sourceTree = "<group>"; };
 		749DA9852EB07F2F00EA8118 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		B4AD1D0F2AA24E8200471AC8 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		DAEE29C52A9CB52100633898 /* WebWallpaperViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebWallpaperViewModel.swift; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 			children = (
 				5E0700E52A859FAD00ADFE2E /* WallpaperNotFound.mp4 */,
 				5EC47E7D2A2DB2E700120CCC /* Assets.xcassets */,
+				747544612FA6880C00E1ECFE /* Audio.app */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -430,7 +433,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1640;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					5EC47E752A2DB2E600120CCC = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -452,6 +455,7 @@
 			knownRegions = (
 				en,
 				"zh-Hans",
+				Base,
 			);
 			mainGroup = 5EC47E6D2A2DB2E600120CCC;
 			productRefGroup = 5EC47E772A2DB2E600120CCC /* Products */;
@@ -470,6 +474,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				747544622FA6880C00E1ECFE /* Audio.app in Resources */,
 				5EC47E812A2DB2E700120CCC /* Preview Assets.xcassets in Resources */,
 				5E0700E62A859FAD00ADFE2E /* WallpaperNotFound.mp4 in Resources */,
 				740D846A2EEEBB7E00BEEC26 /* Localizable.xcstrings in Resources */,
@@ -634,6 +639,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -693,6 +699,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -726,6 +733,7 @@
 				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Open-Wallpaper-Engine-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Open Wallpaper Engine Modified";
@@ -737,8 +745,17 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/_core/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.5.5;
+				MARKETING_VERSION = 0.5.6;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.errorawa.open-wallpaper-engine-modified";
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
@@ -775,6 +792,7 @@
 				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Open-Wallpaper-Engine-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Open Wallpaper Engine Modified";
@@ -786,8 +804,17 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/_core/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.5.5;
+				MARKETING_VERSION = 0.5.6;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.errorawa.open-wallpaper-engine-modified";
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

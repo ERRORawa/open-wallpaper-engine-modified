@@ -22,6 +22,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
     var wallpaperWindow: NSWindow!
     
+    let process = Process()
+    
     @Published var changePlayList = -1
     
     var contentViewModel = ContentViewModel()
@@ -54,6 +56,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         // 创建化右上角常驻菜单栏
         setStatusMenu()
         
+        runAudio()
+        
         // 创建主视窗
         self.mainWindowController = MainWindowController()
         
@@ -65,6 +69,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let dockMenu = self.statusItem.menu?.copy() as! NSMenu?
         dockMenu?.items.removeLast() // Remove `Quit` menu item
         return dockMenu
+    }
+    
+    func runAudio() {
+        let subAppURL = Bundle.main.url(forResource: "Audio", withExtension: "app")!
+        let configuration = NSWorkspace.OpenConfiguration()
+        NSWorkspace.shared.openApplication(at: subAppURL, configuration: configuration) { (runningApp, error) in
+            if let error = error {
+                print("启动失败：\(error)")
+            } else {
+                print("启动成功")
+            }
+        }
     }
     
 // MARK: - delegate methods

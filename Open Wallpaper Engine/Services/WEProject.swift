@@ -32,6 +32,18 @@ struct WEProjectProperties: Codable, Equatable, Hashable {
 
 struct WEProjectGeneral: Codable, Equatable, Hashable {
     var properties: WEProjectProperties
+    var supportsaudioprocessing: Bool = false
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        properties = try container.decode(WEProjectProperties.self, forKey: .properties)
+        supportsaudioprocessing = try container.decodeIfPresent(Bool.self, forKey: .supportsaudioprocessing) ?? false
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case properties
+        case supportsaudioprocessing
+    }
 }
 
 enum WorkshopId: Codable, Equatable, Hashable {
