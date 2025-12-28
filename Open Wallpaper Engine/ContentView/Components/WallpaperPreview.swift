@@ -39,6 +39,11 @@ struct WallpaperPreview: SubviewOfContentView {
             get: { colorValues[key] ?? Color.white },
             set: { newValue in
                 colorValues[key] = newValue
+                let r = String(((newValue.components.red * 255).rounded() / 255))
+                let g = String(((newValue.components.green * 255).rounded() / 255))
+                let b = String(((newValue.components.blue * 255).rounded() / 255))
+                let rgb = "\(r) \(g) \(b)"
+                updateProperties(key: key, value: rgb)
             }
         )
     }
@@ -88,14 +93,6 @@ struct WallpaperPreview: SubviewOfContentView {
             get: { textValues[key] ?? ""},
             set: { newValue in textValues[key] = newValue }
         )
-    }
-    
-    func updateColor(key: String, color: Color) {
-        let r = String(((color.components.red * 255).rounded() / 255))
-        let g = String(((color.components.green * 255).rounded() / 255))
-        let b = String(((color.components.blue * 255).rounded() / 255))
-        let rgb = "\(r) \(g) \(b)"
-        updateProperties(key: key, value: rgb)
     }
     
     func convertDictToJSONString(dict:  NSMutableDictionary, prettyPrinted: Bool = false) -> String? {
@@ -520,12 +517,6 @@ struct WallpaperPreview: SubviewOfContentView {
                                             multiText(texts: label)
                                             Spacer()
                                             ColorPicker("", selection: colorBinding(for: key), supportsOpacity: false)
-                                                .onChange(of: colorValues[key] ?? Color.white) { newValue in
-                                                    colorTimer?.invalidate()
-                                                    colorTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
-                                                        updateColor(key: key, color: newValue)
-                                                    }
-                                                }
                                         }
                                         .onAppear {
                                             colorValues[key] = Color(red: value[0], green: value[1], blue: value[2], opacity: 1)
