@@ -52,7 +52,7 @@
 		5EFC591D2A81ACBC005F97E2 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC591C2A81ACBC005F97E2 /* StatusBar.swift */; };
 		5EFC591F2A81ACC3005F97E2 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EFC591E2A81ACC3005F97E2 /* MainMenu.swift */; };
 		740A9F872EEEC1E200D7E7BB /* LanguageState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740A9F862EEEC1E200D7E7BB /* LanguageState.swift */; };
-		740D84682EED41C600BEEC26 /* ImageFilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740D84672EED41C600BEEC26 /* ImageFilePicker.swift */; };
+		740D84682EED41C600BEEC26 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740D84672EED41C600BEEC26 /* FilePicker.swift */; };
 		740D846A2EEEBB7E00BEEC26 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 740D84692EEEBB7E00BEEC26 /* Localizable.xcstrings */; };
 		DAEE29C62A9CB52100633898 /* WebWallpaperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEE29C52A9CB52100633898 /* WebWallpaperViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -131,7 +131,7 @@
 		5EFC591C2A81ACBC005F97E2 /* StatusBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		5EFC591E2A81ACC3005F97E2 /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		740A9F862EEEC1E200D7E7BB /* LanguageState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageState.swift; sourceTree = "<group>"; };
-		740D84672EED41C600BEEC26 /* ImageFilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFilePicker.swift; sourceTree = "<group>"; };
+		740D84672EED41C600BEEC26 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		740D84692EEEBB7E00BEEC26 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		749DA9852EB07F2F00EA8118 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		B4AD1D0F2AA24E8200471AC8 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -168,7 +168,7 @@
 			children = (
 				5E66A0EC2A8BABAB00EE79D6 /* DisplaySettings.swift */,
 				5E51A4392AA30D8B00E46E99 /* UnsafeWallpaper.swift */,
-				740D84672EED41C600BEEC26 /* ImageFilePicker.swift */,
+				740D84672EED41C600BEEC26 /* FilePicker.swift */,
 			);
 			path = Alerts;
 			sourceTree = "<group>";
@@ -516,7 +516,7 @@
 				5E66A0E12A8BA18D00EE79D6 /* GifImage.swift in Sources */,
 				5EF28EBF2A8986AC0013ABBE /* WallpaperViewModel.swift in Sources */,
 				5E66A0DF2A8AE3C900EE79D6 /* ContentViewModel.swift in Sources */,
-				740D84682EED41C600BEEC26 /* ImageFilePicker.swift in Sources */,
+				740D84682EED41C600BEEC26 /* FilePicker.swift in Sources */,
 				5E66A0EF2A8BADC900EE79D6 /* ExplorerBottomBar.swift in Sources */,
 				5E66A0E62A8BA69B00EE79D6 /* WallpaperExplorer.swift in Sources */,
 				5EA310FE2A88E135001A65F4 /* WebWallpaperView.swift in Sources */,

@@ -1,7 +1,7 @@
 import SwiftUI
 import AppKit
 import UniformTypeIdentifiers
-struct ImageFilePicker {
+struct FilePicker {
     @Binding var fileValues: [String: URL]
     @Binding var isPresented: Bool
     @Binding var isCancle: Bool

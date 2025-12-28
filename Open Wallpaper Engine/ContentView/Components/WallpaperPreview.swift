@@ -28,9 +28,9 @@ struct WallpaperPreview: SubviewOfContentView {
     @State var textValues: [String: String] = [:]
     
     @State var fileValues: [String: URL] = [:]
+    @State var fileType: [String: String] = [:]
     @State var showFilePicker = false
     @State var isCancle = false
-    @State var fileKey = ""
     @State var realFile: [String: String] = [:]
     @State var isDir: ObjCBool = false
     
@@ -616,6 +616,7 @@ struct WallpaperPreview: SubviewOfContentView {
                                         }
                                     case "file":
                                         let value = ""
+                                        let fileType = dict["fileType"] as? String ?? "image"
                                         HStack {
                                             multiText(texts: label)
                                             Spacer()
@@ -625,9 +626,8 @@ struct WallpaperPreview: SubviewOfContentView {
                                                         .scaleEffect(0.8, anchor: .bottom)
                                                         .offset(y: 5)
                                                     Button() {
-                                                        fileKey = key
                                                         showFilePicker = true
-                                                        ImageFilePicker(fileValues: $fileValues, isPresented: $showFilePicker, isCancle: $isCancle, key: fileKey).showPanel()
+                                                        FilePicker(fileValues: $fileValues, isPresented: $showFilePicker, isCancle: $isCancle, key: key, fileType: fileType).showPanel()
                                                         updateProperties(key: key, value: fileValues[key] ?? "")
                                                     } label: {
                                                         Image(systemName: "pencil.line")
@@ -642,9 +642,8 @@ struct WallpaperPreview: SubviewOfContentView {
                                                         .offset(y: 5)
                                                     HStack {
                                                         Button() {
-                                                            fileKey = key
                                                             showFilePicker = true
-                                                            ImageFilePicker(fileValues: $fileValues, isPresented: $showFilePicker, isCancle: $isCancle, key: fileKey).showPanel()
+                                                            FilePicker(fileValues: $fileValues, isPresented: $showFilePicker, isCancle: $isCancle, key: key, fileType: fileType).showPanel()
                                                             updateProperties(key: key, value: fileValues[key]!)
                                                         } label: {
                                                             Image(systemName: "pencil.line")
@@ -663,7 +662,6 @@ struct WallpaperPreview: SubviewOfContentView {
                                                         }
                                                         
                                                         Button() {
-                                                            fileKey = key
                                                             fileValues[key] = URL(filePath: "remove")
                                                             updateProperties(key: key, value: fileValues[key]!)
                                                         } label: {
