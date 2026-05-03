@@ -1,5 +1,9 @@
 if [[ "$(which pyinstaller)" == "" ]]; then
-  echo "please install pyinstaller first!"
+  echo "please install pyinstaller"
+  exit
+fi
+if [[ "$(find ./audio.py)" == "" ]]; then
+  echo "audio.py not found"
   exit
 fi
 pyinstaller --windowed --onefile --name "Audio" audio.py

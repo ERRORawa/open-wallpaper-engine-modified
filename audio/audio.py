@@ -5,6 +5,8 @@ import struct
 import subprocess
 import time
 import threading
+import os
+import tempfile
 
 CHUNK = 4096
 SAMPLE_RATE = 44100
@@ -19,6 +21,22 @@ REF_MAX_MAGNITUDE = CHUNK / 2.0
 SMOOTHING_ALPHA = 0.2
 VOLUME_REFRESH_INTERVAL = 0.5
 
+parent_pid = 0
+home = os.path.expanduser("~")
+pidfile = os.path.join(home, "Library/Containers/com.errorawa.open-wallpaper-engine-modified/Data/tmp/OpenWallpaperEngine.pid")
+try:
+    if os.path.exists(pidfile):
+        with open(pidfile, "r") as f:
+            content = f.read().strip()
+            parent_pid = int(content)
+            print("找到PID", parent_pid)
+    else:
+        print("未找到文件")
+        os._exit(0)
+except Exception:
+    print("未找到PID")
+    os._exit(0)
+    
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 recorder = SystemAudioRecorder(
     sample_rate=SAMPLE_RATE,
@@ -35,6 +53,10 @@ current_volume = 0
 volume_lock = threading.Lock()
 
 def get_system_volume():
+    try:
+        os.kill(parent_pid, 0)
+    except OSError:
+        os._exit(0)
     try:
         cmd = "osascript -e 'output volume of (get volume settings)'"
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=1)

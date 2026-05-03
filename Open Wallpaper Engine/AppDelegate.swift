@@ -22,8 +22,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
     var wallpaperWindow: NSWindow!
     
-    let process = Process()
-    
     var udpReceiver = UDPReceiver()
     
     @Published var changePlayList = -1
@@ -76,11 +74,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     func runAudio() {
         let subAppURL = Bundle.main.url(forResource: "Audio", withExtension: "app")!
         let configuration = NSWorkspace.OpenConfiguration()
+        let tempDir = FileManager.default.temporaryDirectory
+        let pidFileName = "OpenWallpaperEngine.pid"
+        let pidFileURL = tempDir.appendingPathComponent(pidFileName)
+        let pidString = "\(ProcessInfo.processInfo.processIdentifier)"
+        try? pidString.write(to: pidFileURL, atomically: true, encoding: .utf8)
+        print("PID 文件已写入: \(pidFileURL.path), PID = \(pidString)")
         NSWorkspace.shared.openApplication(at: subAppURL, configuration: configuration) { (runningApp, error) in
             if let error = error {
                 print("启动失败：\(error)")
             } else {
-                print("启动成功")
+                print("启动成功，PID：", ProcessInfo.processInfo.processIdentifier)
             }
         }
         udpReceiver.onSpectrumReceived = { spectrum in
