@@ -760,7 +760,7 @@
 					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/_core/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.5.6;
+				MARKETING_VERSION = 0.6.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.errorawa.open-wallpaper-engine-modified";
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
@@ -819,7 +819,7 @@
 					"$(PROJECT_DIR)/Open\\ Wallpaper\\ Engine/Resources/python_env/lib/python3.9/site-packages/numpy/_core/lib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.5.6;
+				MARKETING_VERSION = 0.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.errorawa.open-wallpaper-engine-modified";
 				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME:c99extidentifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";

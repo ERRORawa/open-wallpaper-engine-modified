@@ -20,6 +20,7 @@ DB_MIN = -60.0
 REF_MAX_MAGNITUDE = CHUNK / 2.0
 SMOOTHING_ALPHA = 0.2
 VOLUME_REFRESH_INTERVAL = 0.5
+MAX_SILENCE = 1000
 
 parent_pid = 0
 home = os.path.expanduser("~")
@@ -124,11 +125,40 @@ def process_channel(sig, smooth_state):
     smooth_state[:] = smoothed
     return smoothed
 
+def restart_recorder():
+    global recorder, smooth_left, smooth_right
+    try:
+        recorder.stop_recording()
+    except Exception:
+        pass
+    recorder = SystemAudioRecorder(
+        sample_rate=SAMPLE_RATE,
+        channels=2,
+        format="numpy",
+        dtype="float32"
+    )
+    recorder.start_recording()
+    smooth_left = np.zeros(LEFT_OUT)
+    smooth_right = np.zeros(RIGHT_OUT)
+
+silent_count = 0
+
 try:
     while True:
         audio_block = next(recorder.stream())
         target_block = audio_block[:CHUNK]
         samples = target_block.flatten()
+
+        rms = np.sqrt(np.mean(samples ** 2))
+        if rms < SILENCE_THRESHOLD:
+            silent_count += 1
+        else:
+            silent_count = 0
+
+        if silent_count >= MAX_SILENCE:
+            restart_recorder()
+            silent_count = 0
+            continue
 
         left = samples[0::2][:CHUNK]
         right = samples[1::2][:CHUNK]
