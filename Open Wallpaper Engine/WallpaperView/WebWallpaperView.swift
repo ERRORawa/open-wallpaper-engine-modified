@@ -14,8 +14,6 @@ struct WebWallpaperView: NSViewRepresentable {
     @ObservedObject var wallpaperViewModel: WallpaperViewModel
     @StateObject var viewModel: WebWallpaperViewModel
     
-    let udpReceiver = UDPReceiver()
-    
     init(wallpaperViewModel: WallpaperViewModel) {
         self.wallpaperViewModel = wallpaperViewModel
         self._viewModel = StateObject(wrappedValue: WebWallpaperViewModel(wallpaper: wallpaperViewModel.currentWallpaper))
@@ -70,17 +68,6 @@ struct WebWallpaperView: NSViewRepresentable {
                 }
             }
         }
-        if wallpaperViewModel.currentWallpaper.project.general?.supportsaudioprocessing ?? false {
-            udpReceiver.onSpectrumReceived = nil
-            udpReceiver.onSpectrumReceived = { spectrum in
-                let spectrumArray = spectrum.map { String($0) }.joined(separator: ",")
-                let jsCode = "wallpaperAudioListener([\(spectrumArray)]);"
-                
-                DispatchQueue.main.async {
-                    AppDelegate.shared.nsView.evaluateJavaScript(jsCode, completionHandler: nil)
-                }
-            }
-        }
         let userScript = WKUserScript(
             source: jsCode,
             injectionTime: .atDocumentStart,
@@ -119,17 +106,6 @@ struct WebWallpaperView: NSViewRepresentable {
                 }
             }
         }
-        if wallpaperViewModel.currentWallpaper.project.general?.supportsaudioprocessing ?? false {
-            udpReceiver.onSpectrumReceived = nil
-            udpReceiver.onSpectrumReceived = { spectrum in
-                let spectrumArray = spectrum.map { String($0) }.joined(separator: ",")
-                let jsCode = "wallpaperAudioListener([\(spectrumArray)]);"
-                
-                DispatchQueue.main.async {
-                    AppDelegate.shared.nsView.evaluateJavaScript(jsCode, completionHandler: nil)
-                }
-            }
-        }
         nsView.evaluateJavaScript(jsCode, completionHandler: nil)
         if selectedWallpaper.wallpaperDirectory.appending(path: selectedWallpaper.project.file) != currentWallpaper.wallpaperDirectory.appending(path: currentWallpaper.project.file) {
             viewModel.currentWallpaper = selectedWallpaper
@@ -138,79 +114,5 @@ struct WebWallpaperView: NSViewRepresentable {
         if AppDelegate.shared.viewModel.settings.switchAfterFinish {
             AppDelegate.shared.startListening()
         }
-    }
-}
-
-class UDPReceiver: NSObject {
-    var onSpectrumReceived: (([Float]) -> Void)?
-    private var socket: FileHandle?
-    private var receiveCount = 0
-    
-    override init() {
-        super.init()
-        setupSocket()
-    }
-    
-    func setupSocket() {
-        let udpSocket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_DGRAM, IPPROTO_UDP, 0, nil, nil)
-        guard let udpSocket = udpSocket else {
-            print("无法创建接收器")
-            return
-        }
-        
-        var addr = sockaddr_in()
-        addr.sin_family = sa_family_t(AF_INET)
-        addr.sin_port = CFSwapInt16HostToBig(9999)
-        addr.sin_addr.s_addr = inet_addr("127.0.0.1")
-        
-        let addrData = NSData(bytes: &addr, length: MemoryLayout<sockaddr_in>.size)
-        let result = CFSocketSetAddress(udpSocket, addrData as CFData)
-        if result != .success {
-            print("绑定地址失败")
-            return
-        }
-        let fd = CFSocketGetNative(udpSocket)
-        socket = FileHandle(fileDescriptor: fd, closeOnDealloc: true)
-        socket?.readabilityHandler = { [weak self] handle in
-            let data = handle.availableData
-            self?.processReceivedData(data)
-        }
-    }
-    
-    func processReceivedData(_ data: Data) {
-        guard data.count == 512 else {
-            return
-        }
-        
-        let floats = data.withUnsafeBytes { buffer -> [Float] in
-            let floatBuffer = buffer.bindMemory(to: Float.self)
-            return Array(floatBuffer)
-        }
-        
-        guard floats.count == 128 else {
-            return
-        }
-        
-        var cleaned = [Float]()
-        
-        for value in floats {
-            var cleanValue = value
-            
-            if cleanValue.isNaN || cleanValue.isInfinite {
-                cleanValue = 0.0
-            }
-            
-            cleanValue = max(0.0, min(1.0, cleanValue))
-            cleaned.append(cleanValue)
-        }
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.onSpectrumReceived?(cleaned)
-        }
-    }
-    
-    deinit {
-        socket?.readabilityHandler = nil
-        socket?.closeFile()
     }
 }

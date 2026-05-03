@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -54,7 +54,7 @@
 		740A9F872EEEC1E200D7E7BB /* LanguageState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740A9F862EEEC1E200D7E7BB /* LanguageState.swift */; };
 		740D84682EED41C600BEEC26 /* FilePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 740D84672EED41C600BEEC26 /* FilePicker.swift */; };
 		740D846A2EEEBB7E00BEEC26 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 740D84692EEEBB7E00BEEC26 /* Localizable.xcstrings */; };
-		747544622FA6880C00E1ECFE /* Audio.app in Resources */ = {isa = PBXBuildFile; fileRef = 747544612FA6880C00E1ECFE /* Audio.app */; };
+		747544982FA767CC00E1ECFE /* Audio.app in Resources */ = {isa = PBXBuildFile; fileRef = 747544972FA767CC00E1ECFE /* Audio.app */; };
 		DAEE29C62A9CB52100633898 /* WebWallpaperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEE29C52A9CB52100633898 /* WebWallpaperViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -134,11 +134,15 @@
 		740A9F862EEEC1E200D7E7BB /* LanguageState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageState.swift; sourceTree = "<group>"; };
 		740D84672EED41C600BEEC26 /* FilePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePicker.swift; sourceTree = "<group>"; };
 		740D84692EEEBB7E00BEEC26 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		747544612FA6880C00E1ECFE /* Audio.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = Audio.app; sourceTree = "<group>"; };
+		747544972FA767CC00E1ECFE /* Audio.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = Audio.app; sourceTree = "<group>"; };
 		749DA9852EB07F2F00EA8118 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		B4AD1D0F2AA24E8200471AC8 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		DAEE29C52A9CB52100633898 /* WebWallpaperViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebWallpaperViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		747544662FA764E300E1ECFE /* audio */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = audio; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		5EC47E732A2DB2E600120CCC /* Frameworks */ = {
@@ -265,7 +269,7 @@
 			children = (
 				5E0700E52A859FAD00ADFE2E /* WallpaperNotFound.mp4 */,
 				5EC47E7D2A2DB2E700120CCC /* Assets.xcassets */,
-				747544612FA6880C00E1ECFE /* Audio.app */,
+				747544972FA767CC00E1ECFE /* Audio.app */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -278,6 +282,7 @@
 				5E6091F12A83E85D00D4C36C /* AUTHORS.md */,
 				5EF4C24B2A4C9872009831E5 /* LICENSE */,
 				5EF4C24C2A4C98FA009831E5 /* README.md */,
+				747544662FA764E300E1ECFE /* audio */,
 				5EEE8D5D2A7501C800DCE41A /* resources */,
 				5EC47E782A2DB2E600120CCC /* Open Wallpaper Engine */,
 				5EC47E8F2A2DB2E700120CCC /* Open Wallpaper EngineTests */,
@@ -474,7 +479,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				747544622FA6880C00E1ECFE /* Audio.app in Resources */,
+				747544982FA767CC00E1ECFE /* Audio.app in Resources */,
 				5EC47E812A2DB2E700120CCC /* Preview Assets.xcassets in Resources */,
 				5E0700E62A859FAD00ADFE2E /* WallpaperNotFound.mp4 in Resources */,
 				740D846A2EEEBB7E00BEEC26 /* Localizable.xcstrings in Resources */,
