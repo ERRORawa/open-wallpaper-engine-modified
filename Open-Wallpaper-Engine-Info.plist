@@ -8,7 +8,7 @@
 		<dict/>
 	</dict>
 	<key>NSAudioCaptureUsageDescription</key>
-	<string>测试功能</string>
+	<string>用于Web音频可视化</string>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
